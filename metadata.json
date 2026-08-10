@@ -1,0 +1,6 @@
+{
+  "name": "Online Task Lab (OTL)",
+  "description": "Premium Digital Resource Hub for Apps, AI Prompts, Landing Pages, LR Presets, PC Software with Telegram integration.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

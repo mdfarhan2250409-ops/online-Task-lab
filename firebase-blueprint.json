@@ -1,0 +1,63 @@
+{
+  "entities": {
+    "inquiries": {
+      "title": "Inquiries",
+      "description": "Contact form submissions and chat messages from users",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "email": { "type": "string" },
+        "telegramWhatsapp": { "type": "string" },
+        "subject": { "type": "string" },
+        "message": { "type": "string" },
+        "category": { "type": "string" },
+        "status": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["message"]
+    },
+    "resources": {
+      "title": "Resources",
+      "description": "Products and downloadable resources",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "category": { "type": "string" },
+        "description": { "type": "string" },
+        "downloadUrl": { "type": "string" },
+        "telegramUrl": { "type": "string" },
+        "imageUrl": { "type": "string" },
+        "tags": { "type": "array", "items": { "type": "string" } },
+        "isHot": { "type": "boolean" },
+        "isNew": { "type": "boolean" },
+        "isFeatured": { "type": "boolean" },
+        "downloadsCount": { "type": "number" },
+        "telegramClicksCount": { "type": "number" },
+        "createdAt": { "type": "string" }
+      }
+    },
+    "categories": {
+      "title": "Categories",
+      "description": "Resource categories",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "icon": { "type": "string" },
+        "count": { "type": "number" },
+        "badge": { "type": "string" }
+      }
+    },
+    "settings": {
+      "title": "Settings",
+      "description": "Site and module configurations",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" }
+      }
+    }
+  }
+}
