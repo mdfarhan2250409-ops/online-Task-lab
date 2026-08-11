@@ -147,7 +147,7 @@ export const ProductCard: React.FC<{ resource: Resource }> = ({ resource }) => {
       <div>
         <div className="flex items-center justify-between text-[11px] text-slate-400 border-t border-white/10 pt-2.5 mb-3 font-medium">
           <span>Ver: {resource.version}</span>
-          <span>{resource.downloadsCount.toLocaleString()} Downloads</span>
+          <span>{(resource.downloadsCount ?? 0).toLocaleString()} Downloads</span>
         </div>
 
         <div className="grid grid-cols-2 gap-1.5 sm:gap-2">

@@ -360,7 +360,7 @@ export const AdminProducts: React.FC = () => {
                 </td>
                 <td className="p-3 capitalize font-semibold text-[#5DE2E7]">{res.category}</td>
                 <td className="p-3">{res.version} ({res.fileSize})</td>
-                <td className="p-3 font-mono text-cyan-300">{res.downloadsCount.toLocaleString()}</td>
+                <td className="p-3 font-mono text-cyan-300">{(res.downloadsCount ?? 0).toLocaleString()}</td>
                 <td className="p-3">
                   {res.isFeatured && <span className="px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 text-[10px] mr-1">Featured</span>}
                   {res.isTrending && <span className="px-1.5 py-0.5 rounded bg-red-500/20 text-red-300 text-[10px]">Trending</span>}

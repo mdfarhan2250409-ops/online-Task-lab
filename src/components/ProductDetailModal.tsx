@@ -177,7 +177,7 @@ export const ProductDetailModal: React.FC = () => {
                   Size: <strong className="text-white">{resource.fileSize}</strong>
                 </span>
                 <span className="px-2.5 py-1 rounded-lg bg-slate-900 border border-white/10">
-                  Downloads: <strong className="text-white">{resource.downloadsCount.toLocaleString()}</strong>
+                  Downloads: <strong className="text-white">{(resource.downloadsCount ?? 0).toLocaleString()}</strong>
                 </span>
                 <span className="px-2.5 py-1 rounded-lg bg-emerald-500/10 text-emerald-300 border border-emerald-500/20 flex items-center gap-1">
                   <ShieldCheck className="w-3.5 h-3.5" /> Verified Clean

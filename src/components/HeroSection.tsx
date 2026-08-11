@@ -150,7 +150,7 @@ export const HeroSection: React.FC = () => {
               <Download className="w-4 h-4 text-cyan-400" />
             </div>
             <div className="text-xl sm:text-2xl font-black text-white">
-              {homepageBuilder.stat2Value || `${(analytics.totalDownloads / 1000).toFixed(1)}k+`}
+              {homepageBuilder.stat2Value || `${((analytics?.totalDownloads ?? 0) / 1000).toFixed(1)}k+`}
             </div>
             <div className="text-[11px] text-slate-400 font-medium uppercase tracking-wider">
               {homepageBuilder.stat2Label || 'Downloads'}
@@ -162,7 +162,7 @@ export const HeroSection: React.FC = () => {
               <Users className="w-4 h-4 text-blue-400" />
             </div>
             <div className="text-xl sm:text-2xl font-black text-white">
-              {homepageBuilder.stat3Value || `${(analytics.telegramClicks / 1000).toFixed(1)}k+`}
+              {homepageBuilder.stat3Value || `${((analytics?.telegramClicks ?? 0) / 1000).toFixed(1)}k+`}
             </div>
             <div className="text-[11px] text-slate-400 font-medium uppercase tracking-wider">
               {homepageBuilder.stat3Label || 'Telegram Clicks'}

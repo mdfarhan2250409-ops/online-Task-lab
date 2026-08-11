@@ -49,7 +49,7 @@ export const AdminDashboard: React.FC = () => {
             <span>Total Downloads</span>
             <Download className="w-4 h-4 text-cyan-400" />
           </div>
-          <div className="text-2xl font-black text-white">{analytics.totalDownloads.toLocaleString()}</div>
+          <div className="text-2xl font-black text-white">{(analytics?.totalDownloads ?? 0).toLocaleString()}</div>
           <div className="text-[10px] text-emerald-400 mt-1">↑ Active downloads</div>
         </div>
 
@@ -58,7 +58,7 @@ export const AdminDashboard: React.FC = () => {
             <span>Telegram Clicks</span>
             <Send className="w-4 h-4 text-blue-400" />
           </div>
-          <div className="text-2xl font-black text-white">{analytics.telegramClicks.toLocaleString()}</div>
+          <div className="text-2xl font-black text-white">{(analytics?.telegramClicks ?? 0).toLocaleString()}</div>
           <div className="text-[10px] text-blue-400 mt-1">Channel conversions</div>
         </div>
 

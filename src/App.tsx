@@ -19,7 +19,23 @@ import { motion, AnimatePresence } from 'motion/react';
 import { CheckCircle2 } from 'lucide-react';
 
 const MainLayout: React.FC = () => {
-  const { toastMessage, homepageBuilder, selectedCategory, isAdminOpen } = useApp();
+  const { toastMessage, homepageBuilder, siteSettings, seo, selectedCategory, isAdminOpen } = useApp();
+
+  // Dynamically update document title and favicon
+  useEffect(() => {
+    const title = seo?.metaTitle || siteSettings?.websiteTitle || 'Online Task Lab (OTL)';
+    document.title = title;
+
+    if (siteSettings?.faviconUrl) {
+      let favicon = document.querySelector("link[rel*='icon']") as HTMLLinkElement;
+      if (!favicon) {
+        favicon = document.createElement('link');
+        favicon.rel = 'icon';
+        document.head.appendChild(favicon);
+      }
+      favicon.href = siteSettings.faviconUrl;
+    }
+  }, [siteSettings, seo]);
 
   // Scroll to top smoothly whenever category or admin page state changes
   useEffect(() => {
