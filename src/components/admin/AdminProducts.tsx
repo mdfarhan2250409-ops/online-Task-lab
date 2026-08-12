@@ -4,7 +4,7 @@ import { Resource, ResourceCategory } from '../../types';
 import { Plus, Edit, Trash2, Copy, Check, X, Smartphone, Layout, Bot, Sliders, Monitor, Image } from 'lucide-react';
 
 export const AdminProducts: React.FC = () => {
-  const { resources, addResource, updateResource, deleteResource, cloneResource } = useApp();
+  const { resources, addResource, updateResource, deleteResource, cloneResource, resetToDefaults } = useApp();
 
   const [isEditing, setIsEditing] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -136,12 +136,21 @@ export const AdminProducts: React.FC = () => {
           <h3 className="text-base font-extrabold text-white">Resource Products Manager</h3>
           <p className="text-xs text-slate-400">Add, edit, delete, or clone resources across all categories</p>
         </div>
-        <button
-          onClick={openNewForm}
-          className="px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-lg"
-        >
-          <Plus className="w-4 h-4" /> Add New Resource
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={resetToDefaults}
+            className="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-white/10 text-xs font-bold transition-all"
+            title="Reload all default demo products into system"
+          >
+            Restore Demo Products
+          </button>
+          <button
+            onClick={openNewForm}
+            className="px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-lg"
+          >
+            <Plus className="w-4 h-4" /> Add New Resource
+          </button>
+        </div>
       </div>
 
       {/* Edit / Add Modal Form */}

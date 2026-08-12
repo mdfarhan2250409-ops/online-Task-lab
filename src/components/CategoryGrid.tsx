@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { Smartphone, Layout, Bot, Sliders, Monitor, ArrowRight, Layers } from 'lucide-react';
 import { ResourceCategory } from '../types';
@@ -57,10 +58,11 @@ export const CategoryGrid: React.FC = () => {
         {categories.map((cat) => {
           const count = getItemCount(cat.id as ResourceCategory);
           return (
-            <div
+            <Link
               key={cat.id}
+              to={`/category/${cat.id}`}
               onClick={() => handleCategorySelect(cat.id as ResourceCategory)}
-              className="group glass-panel rounded-2xl p-5 border border-white/10 glass-panel-hover cursor-pointer relative overflow-hidden flex flex-col justify-between"
+              className="group glass-panel rounded-2xl p-5 border border-white/10 glass-panel-hover cursor-pointer relative overflow-hidden flex flex-col justify-between block"
             >
               {/* Background gradient image effect */}
               <div className="absolute inset-0 opacity-10 group-hover:opacity-20 transition-opacity bg-cover bg-center" style={{ backgroundImage: `url(${cat.banner})` }} />
@@ -87,10 +89,11 @@ export const CategoryGrid: React.FC = () => {
                   <ArrowRight className="w-3.5 h-3.5" />
                 </span>
               </div>
-            </div>
+            </Link>
           );
         })}
       </div>
     </section>
   );
 };
+

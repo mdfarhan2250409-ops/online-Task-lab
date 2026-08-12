@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { Zap, Shield, ExternalLink, Mail } from 'lucide-react';
 import { ResourceCategory } from '../types';
@@ -19,7 +20,7 @@ export const Footer: React.FC = () => {
         
         {/* Col 1: Brand Info */}
         <div className="space-y-4 md:col-span-1">
-          <div className="flex items-center space-x-2.5">
+          <Link to="/" onClick={() => handleCategoryClick('all')} className="flex items-center space-x-2.5">
             <OtlLogo size="sm" animate={true} />
             <div>
               <span className="font-extrabold text-xl tracking-tight text-white">
@@ -29,7 +30,7 @@ export const Footer: React.FC = () => {
                 Online Task Lab
               </span>
             </div>
-          </div>
+          </Link>
 
           <p className="text-xs text-slate-400 leading-relaxed">
             {siteSettings.tagline || 'Apps • AI Prompts • Landing Pages • Lightroom Presets • PC Software'}
@@ -63,19 +64,19 @@ export const Footer: React.FC = () => {
           </h4>
           <ul className="space-y-2 text-xs">
             <li>
-              <button onClick={() => handleCategoryClick('all')} className="hover:text-[#5DE2E7] transition">
+              <Link to="/" onClick={() => handleCategoryClick('all')} className="hover:text-[#5DE2E7] transition">
                 Homepage
-              </button>
+              </Link>
             </li>
             <li>
-              <button onClick={() => setIsContactModalOpen(true)} className="hover:text-[#5DE2E7] transition">
+              <Link to="/contact" onClick={() => setIsContactModalOpen(true)} className="hover:text-[#5DE2E7] transition">
                 Contact & Support
-              </button>
+              </Link>
             </li>
             <li>
-              <button onClick={() => setIsAdminOpen(true)} className="hover:text-[#5DE2E7] transition flex items-center gap-1">
+              <Link to="/admin" onClick={() => setIsAdminOpen(true)} className="hover:text-[#5DE2E7] transition flex items-center gap-1">
                 <Shield className="w-3 h-3 text-[#5DE2E7]" /> Admin Panel
-              </button>
+              </Link>
             </li>
           </ul>
         </div>
@@ -87,32 +88,33 @@ export const Footer: React.FC = () => {
           </h4>
           <ul className="space-y-2 text-xs">
             <li>
-              <button onClick={() => handleCategoryClick('apps')} className="hover:text-[#5DE2E7] transition">
+              <Link to="/category/apps" onClick={() => handleCategoryClick('apps')} className="hover:text-[#5DE2E7] transition">
                 Mobile Apps (Mod APKs)
-              </button>
+              </Link>
             </li>
             <li>
-              <button onClick={() => handleCategoryClick('landing-pages')} className="hover:text-[#5DE2E7] transition">
+              <Link to="/category/landing-pages" onClick={() => handleCategoryClick('landing-pages')} className="hover:text-[#5DE2E7] transition">
                 Landing Page Templates
-              </button>
+              </Link>
             </li>
             <li>
-              <button onClick={() => handleCategoryClick('ai-prompts')} className="hover:text-[#5DE2E7] transition">
+              <Link to="/category/ai-prompts" onClick={() => handleCategoryClick('ai-prompts')} className="hover:text-[#5DE2E7] transition">
                 AI Prompts (Midjourney/GPT)
-              </button>
+              </Link>
             </li>
             <li>
-              <button onClick={() => handleCategoryClick('lr-presets')} className="hover:text-[#5DE2E7] transition">
+              <Link to="/category/lr-presets" onClick={() => handleCategoryClick('lr-presets')} className="hover:text-[#5DE2E7] transition">
                 Lightroom Presets (DNG/XMP)
-              </button>
+              </Link>
             </li>
             <li>
-              <button onClick={() => handleCategoryClick('pc-software')} className="hover:text-[#5DE2E7] transition">
+              <Link to="/category/pc-software" onClick={() => handleCategoryClick('pc-software')} className="hover:text-[#5DE2E7] transition">
                 PC Software (Pre-Activated)
-              </button>
+              </Link>
             </li>
           </ul>
         </div>
+
 
         {/* Col 4: Telegram & Social */}
         <div>

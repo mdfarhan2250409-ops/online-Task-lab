@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { Search, Send, Menu, Shield, Zap, Sliders, Smartphone, Layout, Bot, Monitor, Mail } from 'lucide-react';
 import { ResourceCategory } from '../types';
@@ -37,7 +38,8 @@ export const Header: React.FC = () => {
           </button>
 
           {/* Logo */}
-          <div
+          <Link
+            to="/"
             onClick={() => handleCategoryClick('all')}
             className="flex items-center space-x-2.5 cursor-pointer group"
           >
@@ -55,12 +57,13 @@ export const Header: React.FC = () => {
                 Online Task Lab
               </span>
             </div>
-          </div>
+          </Link>
         </div>
 
         {/* Center: Navigation Menu (Desktop) */}
         <nav className="hidden lg:flex items-center space-x-1 bg-slate-900/40 p-1.5 rounded-2xl border border-white/10">
-          <button
+          <Link
+            to="/"
             onClick={() => handleCategoryClick('all')}
             className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all ${
               selectedCategory === 'all'
@@ -69,8 +72,9 @@ export const Header: React.FC = () => {
             }`}
           >
             Home
-          </button>
-          <button
+          </Link>
+          <Link
+            to="/category/apps"
             onClick={() => handleCategoryClick('apps')}
             className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 ${
               selectedCategory === 'apps'
@@ -80,8 +84,9 @@ export const Header: React.FC = () => {
           >
             <Smartphone className="w-3.5 h-3.5 text-[#5DE2E7]" />
             Apps
-          </button>
-          <button
+          </Link>
+          <Link
+            to="/category/landing-pages"
             onClick={() => handleCategoryClick('landing-pages')}
             className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 ${
               selectedCategory === 'landing-pages'
@@ -91,8 +96,9 @@ export const Header: React.FC = () => {
           >
             <Layout className="w-3.5 h-3.5 text-[#5DE2E7]" />
             Landing Pages
-          </button>
-          <button
+          </Link>
+          <Link
+            to="/category/ai-prompts"
             onClick={() => handleCategoryClick('ai-prompts')}
             className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 ${
               selectedCategory === 'ai-prompts'
@@ -102,8 +108,9 @@ export const Header: React.FC = () => {
           >
             <Bot className="w-3.5 h-3.5 text-[#5DE2E7]" />
             AI Prompts
-          </button>
-          <button
+          </Link>
+          <Link
+            to="/category/lr-presets"
             onClick={() => handleCategoryClick('lr-presets')}
             className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 ${
               selectedCategory === 'lr-presets'
@@ -113,8 +120,9 @@ export const Header: React.FC = () => {
           >
             <Sliders className="w-3.5 h-3.5 text-[#5DE2E7]" />
             LR Presets
-          </button>
-          <button
+          </Link>
+          <Link
+            to="/category/pc-software"
             onClick={() => handleCategoryClick('pc-software')}
             className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 ${
               selectedCategory === 'pc-software'
@@ -124,37 +132,41 @@ export const Header: React.FC = () => {
           >
             <Monitor className="w-3.5 h-3.5 text-[#5DE2E7]" />
             PC Software
-          </button>
-          <button
+          </Link>
+          <Link
+            to="/contact"
             onClick={() => setIsContactModalOpen(true)}
             className="px-3.5 py-1.5 rounded-xl text-xs font-semibold text-slate-300 hover:text-white hover:bg-white/5 transition-all flex items-center gap-1.5"
           >
             <Mail className="w-3.5 h-3.5 text-[#5DE2E7]" />
             Contact
-          </button>
+          </Link>
         </nav>
 
         {/* Right: Actions (Search, Admin, Telegram) */}
         <div className="flex items-center space-x-2.5">
           {/* Search Button */}
-          <button
+          <Link
+            to="/search"
             onClick={() => setIsSearchModalOpen(true)}
             className="p-2.5 rounded-xl bg-slate-900/60 hover:bg-slate-800 text-slate-300 hover:text-white border border-white/10 transition-all flex items-center gap-2 group"
             title="Search Resources"
           >
             <Search className="w-4 h-4 text-[#5DE2E7] group-hover:scale-110 transition-transform" />
             <span className="text-xs text-slate-400 hidden sm:inline-block pr-1 font-medium">Search...</span>
-          </button>
+          </Link>
 
           {/* Admin Control Panel Entrance */}
-          <button
+          <Link
+            to="/admin"
             onClick={() => setIsAdminOpen(true)}
             className="px-3 py-2 rounded-xl bg-[#133E87]/40 hover:bg-[#133E87]/70 text-slate-200 hover:text-white border border-[#5DE2E7]/30 transition-all flex items-center gap-1.5 text-xs font-semibold shadow-[0_0_10px_rgba(19,62,135,0.3)]"
             title="Admin Management Panel"
           >
             <Shield className="w-3.5 h-3.5 text-[#5DE2E7]" />
             <span className="hidden md:inline-block">Admin</span>
-          </button>
+          </Link>
+
 
           {/* Telegram Channel Button */}
           <a

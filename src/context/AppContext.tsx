@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import {
   Resource,
   CategoryItem,
@@ -17,6 +18,7 @@ import {
   FloatingButton,
   FloatingButtonsSettings
 } from '../types';
+
 import {
   initialCategories,
   initialResources,
@@ -249,21 +251,159 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
   });
 
+  // Router Hooks
+  const navigate = useNavigate();
+  const location = useLocation();
+  const isNavigatingRef = useRef<boolean>(false);
+
   // UI States
-  const [selectedCategory, setSelectedCategory] = useState<ResourceCategory | 'all'>('all');
+  const [selectedCategory, setSelectedCategoryState] = useState<ResourceCategory | 'all'>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [activeTag, setActiveTag] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<'latest' | 'trending' | 'downloads' | 'title'>('latest');
 
   // Modals
-  const [activeResourceModal, setActiveResourceModal] = useState<Resource | null>(null);
-  const [isSearchModalOpen, setIsSearchModalOpen] = useState<boolean>(false);
-  const [isContactModalOpen, setIsContactModalOpen] = useState<boolean>(false);
+  const [activeResourceModal, setActiveResourceModalState] = useState<Resource | null>(null);
+  const [isSearchModalOpen, setIsSearchModalOpenState] = useState<boolean>(false);
+  const [isContactModalOpen, setIsContactModalOpenState] = useState<boolean>(false);
   const [telegramDownloadModalResource, setTelegramDownloadModalResource] = useState<Resource | null>(null);
 
   // Admin & Navigation
-  const [isAdminOpen, setIsAdminOpen] = useState<boolean>(false);
+  const [isAdminOpen, setIsAdminOpenState] = useState<boolean>(false);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState<boolean>(false);
+
+  // Synchronize React state FROM browser URL address bar
+  useEffect(() => {
+    if (isNavigatingRef.current) {
+      isNavigatingRef.current = false;
+      return;
+    }
+
+    const path = location.pathname;
+
+    if (path === '/' || path === '') {
+      setSelectedCategoryState('all');
+      setIsAdminOpenState(false);
+      setIsContactModalOpenState(false);
+      setIsSearchModalOpenState(false);
+      setActiveResourceModalState(null);
+    } else if (path === '/admin') {
+      setIsAdminOpenState(true);
+      setIsContactModalOpenState(false);
+      setIsSearchModalOpenState(false);
+      setActiveResourceModalState(null);
+    } else if (path === '/contact') {
+      setIsContactModalOpenState(true);
+      setIsAdminOpenState(false);
+      setIsSearchModalOpenState(false);
+      setActiveResourceModalState(null);
+    } else if (path === '/search') {
+      setIsSearchModalOpenState(true);
+      setIsAdminOpenState(false);
+      setIsContactModalOpenState(false);
+      setActiveResourceModalState(null);
+    } else if (path.startsWith('/category/')) {
+      const catId = path.replace('/category/', '') as ResourceCategory;
+      setSelectedCategoryState(catId);
+      setIsAdminOpenState(false);
+      setIsContactModalOpenState(false);
+      setIsSearchModalOpenState(false);
+      setActiveResourceModalState(null);
+    } else if (path.startsWith('/product/')) {
+      const prodId = path.replace('/product/', '');
+      setIsAdminOpenState(false);
+      setIsContactModalOpenState(false);
+      setIsSearchModalOpenState(false);
+      const found = resources.find(r => r.id === prodId);
+      if (found) {
+        setActiveResourceModalState(found);
+      }
+    }
+  }, [location.pathname, resources]);
+
+  // Synchronize browser URL address bar FROM user interaction actions
+  const setSelectedCategory = (cat: ResourceCategory | 'all') => {
+    setSelectedCategoryState(cat);
+    setIsAdminOpenState(false);
+    setIsContactModalOpenState(false);
+    setIsSearchModalOpenState(false);
+    setActiveResourceModalState(null);
+
+    isNavigatingRef.current = true;
+    if (cat === 'all') {
+      navigate('/');
+    } else {
+      navigate(`/category/${cat}`);
+    }
+  };
+
+  const setIsAdminOpen = (open: boolean) => {
+    setIsAdminOpenState(open);
+    if (open) {
+      setIsContactModalOpenState(false);
+      setIsSearchModalOpenState(false);
+      setActiveResourceModalState(null);
+    }
+
+    isNavigatingRef.current = true;
+    if (open) {
+      navigate('/admin');
+    } else {
+      navigate(selectedCategory === 'all' ? '/' : `/category/${selectedCategory}`);
+    }
+  };
+
+  const setActiveResourceModal = (r: Resource | null) => {
+    setActiveResourceModalState(r);
+
+    isNavigatingRef.current = true;
+    if (r) {
+      navigate(`/product/${r.id}`);
+    } else {
+      if (isAdminOpen) {
+        navigate('/admin');
+      } else if (selectedCategory !== 'all') {
+        navigate(`/category/${selectedCategory}`);
+      } else {
+        navigate('/');
+      }
+    }
+  };
+
+  const setIsContactModalOpen = (open: boolean) => {
+    setIsContactModalOpenState(open);
+
+    isNavigatingRef.current = true;
+    if (open) {
+      navigate('/contact');
+    } else {
+      if (isAdminOpen) {
+        navigate('/admin');
+      } else if (selectedCategory !== 'all') {
+        navigate(`/category/${selectedCategory}`);
+      } else {
+        navigate('/');
+      }
+    }
+  };
+
+  const setIsSearchModalOpen = (open: boolean) => {
+    setIsSearchModalOpenState(open);
+
+    isNavigatingRef.current = true;
+    if (open) {
+      navigate('/search');
+    } else {
+      if (isAdminOpen) {
+        navigate('/admin');
+      } else if (selectedCategory !== 'all') {
+        navigate(`/category/${selectedCategory}`);
+      } else {
+        navigate('/');
+      }
+    }
+  };
+
 
   // Splash Loader visibility logic
   const [isSplashLoaderVisible, setIsSplashLoaderVisible] = useState<boolean>(() => {
@@ -309,6 +449,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           resList.push({ id: docSnap.id, ...docSnap.data() } as Resource);
         });
         setResources(resList);
+      } else {
+        // If Firestore is empty, auto-seed initial demo products to Firestore
+        initialResources.forEach((res) => {
+          setDoc(doc(db, 'resources', res.id), res, { merge: true }).catch(() => {});
+        });
+        setResources(initialResources);
       }
     }, (err) => console.warn('Firestore resources error:', err));
 
@@ -774,7 +920,23 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setInquiries(initialInquiries);
     setContactSettings(initialContactSettings);
     setFloatingButtonsSettings(initialFloatingButtonsSettings);
-    showToast('All settings reset to default demo content!');
+
+    // Push initial resources & configurations to Firestore
+    initialResources.forEach((res) => {
+      setDoc(doc(db, 'resources', res.id), res, { merge: true }).catch(() => {});
+    });
+    syncSettingsDoc('categories', initialCategories);
+    syncSettingsDoc('siteSettings', initialSiteSettings);
+    syncSettingsDoc('homepageBuilder', initialHomepageBuilder);
+    syncSettingsDoc('splashSettings', initialSplashSettings);
+    syncSettingsDoc('mobileNavSettings', initialMobileNavSettings);
+    syncSettingsDoc('ads', initialAds);
+    syncSettingsDoc('seo', initialSEO);
+    syncSettingsDoc('analytics', initialAnalytics);
+    syncSettingsDoc('contactSettings', initialContactSettings);
+    syncSettingsDoc('floatingButtonsSettings', initialFloatingButtonsSettings);
+
+    showToast('All settings & demo products reset to default content!');
   };
 
   const triggerSplashLoaderPreview = () => {

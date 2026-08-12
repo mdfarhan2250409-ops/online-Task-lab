@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Resource } from '../types';
 import { useApp } from '../context/AppContext';
 import {
@@ -47,6 +48,7 @@ export const ProductCard: React.FC<{ resource: Resource }> = ({ resource }) => {
 
   const handleCopyPrompt = (e: React.MouseEvent) => {
     e.stopPropagation();
+    e.preventDefault();
     if (resource.promptText) {
       navigator.clipboard.writeText(resource.promptText);
       setCopied(true);
@@ -57,19 +59,22 @@ export const ProductCard: React.FC<{ resource: Resource }> = ({ resource }) => {
 
   const handleDownloadClick = (e: React.MouseEvent) => {
     e.stopPropagation();
+    e.preventDefault();
     setTelegramDownloadModalResource(resource);
   };
 
   const handleTelegramClick = (e: React.MouseEvent) => {
     e.stopPropagation();
+    e.preventDefault();
     recordTelegramClick(resource.id);
     window.open(resource.telegramUrl || resource.downloadUrl, '_blank');
   };
 
   return (
-    <div
+    <Link
+      to={`/product/${resource.id}`}
       onClick={() => setActiveResourceModal(resource)}
-      className="group glass-card rounded-2xl border border-white/10 hover:border-[#5DE2E7]/40 p-3 sm:p-4 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_0_30px_rgba(93,226,231,0.25)] cursor-pointer flex flex-col justify-between relative overflow-hidden"
+      className="group glass-card rounded-2xl border border-white/10 hover:border-[#5DE2E7]/40 p-3 sm:p-4 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_0_30px_rgba(93,226,231,0.25)] cursor-pointer flex flex-col justify-between relative overflow-hidden block"
     >
       {/* Top Media Thumbnail */}
       <div>
@@ -184,6 +189,7 @@ export const ProductCard: React.FC<{ resource: Resource }> = ({ resource }) => {
           )}
         </div>
       </div>
-    </div>
+    </Link>
   );
 };
+
