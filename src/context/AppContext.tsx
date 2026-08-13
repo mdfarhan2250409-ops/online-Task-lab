@@ -257,22 +257,52 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   // Router Hooks
   const navigate = useNavigate();
   const location = useLocation();
-  const isNavigatingRef = useRef<boolean>(false);
 
-  // UI States
-  const [selectedCategory, setSelectedCategoryState] = useState<ResourceCategory | 'all'>('all');
+  // Helper to inspect initial URL before first render
+  const getInitialPath = (): string => {
+    if (typeof window === 'undefined') return '/';
+    let p = window.location.pathname.toLowerCase();
+    if (window.location.hash && window.location.hash.startsWith('#')) {
+      const hp = window.location.hash.replace('#', '').toLowerCase();
+      if (hp && hp.startsWith('/')) p = hp;
+    }
+    if (p.length > 1 && p.endsWith('/')) {
+      p = p.slice(0, -1);
+    }
+    return p || '/';
+  };
+
+  const initialPath = getInitialPath();
+
+  // Admin & Navigation States initialized from URL
+  const [isAdminOpen, setIsAdminOpenState] = useState<boolean>(() => {
+    return initialPath === '/admin' || initialPath === 'admin';
+  });
+
+  const [selectedCategory, setSelectedCategoryState] = useState<ResourceCategory | 'all'>(() => {
+    if (initialPath.startsWith('/category/')) {
+      const cat = initialPath.replace('/category/', '') as ResourceCategory;
+      const validCategories = ['all', 'apps', 'landing-pages', 'ai-prompts', 'lr-presets', 'pc-software'];
+      if (validCategories.includes(cat)) return cat;
+    }
+    return 'all';
+  });
+
+  const [isSearchModalOpen, setIsSearchModalOpenState] = useState<boolean>(() => {
+    return initialPath === '/search' || initialPath === 'search';
+  });
+
+  const [isContactModalOpen, setIsContactModalOpenState] = useState<boolean>(() => {
+    return initialPath === '/contact' || initialPath === 'contact';
+  });
+
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [activeTag, setActiveTag] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<'latest' | 'trending' | 'downloads' | 'title'>('latest');
 
-  // Modals
+  // Modals & Navigation
   const [activeResourceModal, setActiveResourceModalState] = useState<Resource | null>(null);
-  const [isSearchModalOpen, setIsSearchModalOpenState] = useState<boolean>(false);
-  const [isContactModalOpen, setIsContactModalOpenState] = useState<boolean>(false);
   const [telegramDownloadModalResource, setTelegramDownloadModalResource] = useState<Resource | null>(null);
-
-  // Admin & Navigation
-  const [isAdminOpen, setIsAdminOpenState] = useState<boolean>(false);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState<boolean>(false);
 
   // 404 Route state
@@ -280,12 +310,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   // Synchronize React state FROM browser URL address bar
   useEffect(() => {
-    if (isNavigatingRef.current) {
-      isNavigatingRef.current = false;
-      return;
+    let path = location.pathname.toLowerCase();
+    if (location.hash && location.hash.startsWith('#')) {
+      const hp = location.hash.replace('#', '').toLowerCase();
+      if (hp && hp.startsWith('/')) path = hp;
     }
-
-    const path = location.pathname;
+    if (path.length > 1 && path.endsWith('/')) {
+      path = path.slice(0, -1);
+    }
 
     if (path === '/' || path === '') {
       setSelectedCategoryState('all');
@@ -294,19 +326,19 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       setIsSearchModalOpenState(false);
       setActiveResourceModalState(null);
       setIsNotFound(false);
-    } else if (path === '/admin') {
+    } else if (path === '/admin' || path === 'admin') {
       setIsAdminOpenState(true);
       setIsContactModalOpenState(false);
       setIsSearchModalOpenState(false);
       setActiveResourceModalState(null);
       setIsNotFound(false);
-    } else if (path === '/contact') {
+    } else if (path === '/contact' || path === 'contact') {
       setIsContactModalOpenState(true);
       setIsAdminOpenState(false);
       setIsSearchModalOpenState(false);
       setActiveResourceModalState(null);
       setIsNotFound(false);
-    } else if (path === '/search') {
+    } else if (path === '/search' || path === 'search') {
       setIsSearchModalOpenState(true);
       setIsAdminOpenState(false);
       setIsContactModalOpenState(false);
@@ -330,7 +362,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       setIsAdminOpenState(false);
       setIsContactModalOpenState(false);
       setIsSearchModalOpenState(false);
-      const found = resources.find(r => r.id === prodId);
+      const found = resources.find(r => r.id.toLowerCase() === prodId);
       if (found) {
         setActiveResourceModalState(found);
         setIsNotFound(false);
@@ -340,7 +372,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     } else {
       setIsNotFound(true);
     }
-  }, [location.pathname, resources]);
+  }, [location.pathname, location.hash, resources]);
 
   // Synchronize browser URL address bar FROM user interaction actions
   const setSelectedCategory = (cat: ResourceCategory | 'all') => {
@@ -351,7 +383,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setActiveResourceModalState(null);
     setIsNotFound(false);
 
-    isNavigatingRef.current = true;
     if (cat === 'all') {
       navigate('/');
     } else {
@@ -366,10 +397,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       setIsContactModalOpenState(false);
       setIsSearchModalOpenState(false);
       setActiveResourceModalState(null);
-    }
-
-    isNavigatingRef.current = true;
-    if (open) {
       navigate('/admin');
     } else {
       navigate(selectedCategory === 'all' ? '/' : `/category/${selectedCategory}`);
@@ -380,7 +407,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setActiveResourceModalState(r);
     setIsNotFound(false);
 
-    isNavigatingRef.current = true;
     if (r) {
       navigate(`/product/${r.id}`);
     } else {
@@ -398,7 +424,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setIsContactModalOpenState(open);
     setIsNotFound(false);
 
-    isNavigatingRef.current = true;
     if (open) {
       navigate('/contact');
     } else {
@@ -416,7 +441,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setIsSearchModalOpenState(open);
     setIsNotFound(false);
 
-    isNavigatingRef.current = true;
     if (open) {
       navigate('/search');
     } else {
