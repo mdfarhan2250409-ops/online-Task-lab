@@ -1,0 +1,13 @@
+# Online Task Lab - Apache URL Rewrite Rules for React Single Page App (SPA)
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+  
+  # If the requested file or directory exists, serve it directly
+  RewriteCond %{REQUEST_FILENAME} -f [OR]
+  RewriteCond %{REQUEST_FILENAME} -d
+  RewriteRule ^ - [L]
+
+  # Otherwise, redirect all requests to index.html so React Router handles the route
+  RewriteRule ^ index.html [L]
+</IfModule>

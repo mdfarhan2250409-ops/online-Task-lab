@@ -89,6 +89,9 @@ interface AppContextType {
   toastMessage: string | null;
   showToast: (msg: string) => void;
 
+  // 404 Route handling
+  isNotFound: boolean;
+
   // Tracking
   recordDownload: (resourceId: string) => void;
   recordTelegramClick: (resourceId?: string) => void;
@@ -272,6 +275,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [isAdminOpen, setIsAdminOpenState] = useState<boolean>(false);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState<boolean>(false);
 
+  // 404 Route state
+  const [isNotFound, setIsNotFound] = useState<boolean>(false);
+
   // Synchronize React state FROM browser URL address bar
   useEffect(() => {
     if (isNavigatingRef.current) {
@@ -287,28 +293,38 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       setIsContactModalOpenState(false);
       setIsSearchModalOpenState(false);
       setActiveResourceModalState(null);
+      setIsNotFound(false);
     } else if (path === '/admin') {
       setIsAdminOpenState(true);
       setIsContactModalOpenState(false);
       setIsSearchModalOpenState(false);
       setActiveResourceModalState(null);
+      setIsNotFound(false);
     } else if (path === '/contact') {
       setIsContactModalOpenState(true);
       setIsAdminOpenState(false);
       setIsSearchModalOpenState(false);
       setActiveResourceModalState(null);
+      setIsNotFound(false);
     } else if (path === '/search') {
       setIsSearchModalOpenState(true);
       setIsAdminOpenState(false);
       setIsContactModalOpenState(false);
       setActiveResourceModalState(null);
+      setIsNotFound(false);
     } else if (path.startsWith('/category/')) {
       const catId = path.replace('/category/', '') as ResourceCategory;
-      setSelectedCategoryState(catId);
-      setIsAdminOpenState(false);
-      setIsContactModalOpenState(false);
-      setIsSearchModalOpenState(false);
-      setActiveResourceModalState(null);
+      const validCategories = ['all', 'apps', 'landing-pages', 'ai-prompts', 'lr-presets', 'pc-software'];
+      if (validCategories.includes(catId)) {
+        setSelectedCategoryState(catId);
+        setIsAdminOpenState(false);
+        setIsContactModalOpenState(false);
+        setIsSearchModalOpenState(false);
+        setActiveResourceModalState(null);
+        setIsNotFound(false);
+      } else {
+        setIsNotFound(true);
+      }
     } else if (path.startsWith('/product/')) {
       const prodId = path.replace('/product/', '');
       setIsAdminOpenState(false);
@@ -317,7 +333,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       const found = resources.find(r => r.id === prodId);
       if (found) {
         setActiveResourceModalState(found);
+        setIsNotFound(false);
+      } else if (resources.length > 0) {
+        setIsNotFound(true);
       }
+    } else {
+      setIsNotFound(true);
     }
   }, [location.pathname, resources]);
 
@@ -328,6 +349,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setIsContactModalOpenState(false);
     setIsSearchModalOpenState(false);
     setActiveResourceModalState(null);
+    setIsNotFound(false);
 
     isNavigatingRef.current = true;
     if (cat === 'all') {
@@ -339,6 +361,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const setIsAdminOpen = (open: boolean) => {
     setIsAdminOpenState(open);
+    setIsNotFound(false);
     if (open) {
       setIsContactModalOpenState(false);
       setIsSearchModalOpenState(false);
@@ -355,6 +378,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const setActiveResourceModal = (r: Resource | null) => {
     setActiveResourceModalState(r);
+    setIsNotFound(false);
 
     isNavigatingRef.current = true;
     if (r) {
@@ -372,6 +396,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const setIsContactModalOpen = (open: boolean) => {
     setIsContactModalOpenState(open);
+    setIsNotFound(false);
 
     isNavigatingRef.current = true;
     if (open) {
@@ -389,6 +414,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const setIsSearchModalOpen = (open: boolean) => {
     setIsSearchModalOpenState(open);
+    setIsNotFound(false);
 
     isNavigatingRef.current = true;
     if (open) {
@@ -980,6 +1006,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         setIsMobileSidebarOpen,
         toastMessage,
         showToast,
+        isNotFound,
         recordDownload,
         recordTelegramClick,
         addResource,

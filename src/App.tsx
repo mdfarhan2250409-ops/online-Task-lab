@@ -12,6 +12,7 @@ import { ProductDetailModal } from './components/ProductDetailModal';
 import { TelegramModal } from './components/TelegramModal';
 import { SearchModal } from './components/SearchModal';
 import { ContactModal } from './components/ContactModal';
+import { NotFoundPage } from './components/NotFoundPage';
 import { FloatingTelegramButton } from './components/FloatingTelegramButton';
 import { Footer } from './components/Footer';
 import { AdminPanel } from './components/admin/AdminPanel';
@@ -19,7 +20,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { CheckCircle2 } from 'lucide-react';
 
 const MainLayout: React.FC = () => {
-  const { toastMessage, homepageBuilder, siteSettings, seo, selectedCategory, isAdminOpen } = useApp();
+  const { toastMessage, homepageBuilder, siteSettings, seo, selectedCategory, isAdminOpen, isNotFound } = useApp();
 
   // Dynamically update document title and favicon
   useEffect(() => {
@@ -58,7 +59,9 @@ const MainLayout: React.FC = () => {
 
       {/* Main Container */}
       <main className="flex-1 relative z-10">
-        {isAdminOpen ? (
+        {isNotFound ? (
+          <NotFoundPage />
+        ) : isAdminOpen ? (
           <AdminPanel />
         ) : selectedCategory === 'all' ? (
           <>
