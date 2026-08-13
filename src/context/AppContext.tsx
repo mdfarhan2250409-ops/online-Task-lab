@@ -276,7 +276,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   // Admin & Navigation States initialized from URL
   const [isAdminOpen, setIsAdminOpenState] = useState<boolean>(() => {
-    return initialPath === '/admin' || initialPath === 'admin';
+    const isAdminPath = (p: string) =>
+      p === '/admin' || p === 'admin' ||
+      p === '/admin-login' || p === 'admin-login' ||
+      p === '/admin/login' || p === 'admin/login';
+    return isAdminPath(initialPath);
   });
 
   const [selectedCategory, setSelectedCategoryState] = useState<ResourceCategory | 'all'>(() => {
@@ -326,7 +330,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       setIsSearchModalOpenState(false);
       setActiveResourceModalState(null);
       setIsNotFound(false);
-    } else if (path === '/admin' || path === 'admin') {
+    } else if (
+      path === '/admin' || path === 'admin' ||
+      path === '/admin-login' || path === 'admin-login' ||
+      path === '/admin/login' || path === 'admin/login'
+    ) {
       setIsAdminOpenState(true);
       setIsContactModalOpenState(false);
       setIsSearchModalOpenState(false);
