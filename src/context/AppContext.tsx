@@ -149,7 +149,15 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [resources, setResources] = useState<Resource[]>(() => {
     try {
       const saved = localStorage.getItem(`${LOCAL_STORAGE_KEY}_resources`);
-      return saved ? JSON.parse(saved) : initialResources;
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          const existingIds = new Set(parsed.map((r: any) => r.id));
+          const missing = initialResources.filter(r => !existingIds.has(r.id));
+          return missing.length > 0 ? [...parsed, ...missing] : parsed;
+        }
+      }
+      return initialResources;
     } catch (e) {
       return initialResources;
     }
@@ -501,20 +509,29 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     // 2. Resources subscription
     const qResources = query(collection(db, 'resources'));
     const unsubResources = onSnapshot(qResources, (snapshot) => {
+      const resList: Resource[] = [];
       if (!snapshot.empty) {
-        const resList: Resource[] = [];
         snapshot.forEach(docSnap => {
           resList.push({ id: docSnap.id, ...docSnap.data() } as Resource);
         });
-        setResources(resList);
-      } else {
-        // If Firestore is empty, auto-seed initial demo products to Firestore
-        initialResources.forEach((res) => {
+      }
+
+      // Merge with initialResources so all categories have products
+      const existingIds = new Set(resList.map(r => r.id));
+      const missingInitial = initialResources.filter(r => !existingIds.has(r.id));
+
+      if (missingInitial.length > 0) {
+        missingInitial.forEach((res) => {
           setDoc(doc(db, 'resources', res.id), res, { merge: true }).catch(() => {});
         });
-        setResources(initialResources);
+        setResources([...resList, ...missingInitial]);
+      } else {
+        setResources(resList);
       }
-    }, (err) => console.warn('Firestore resources error:', err));
+    }, (err) => {
+      console.warn('Firestore resources error:', err);
+      setResources(initialResources);
+    });
 
     // 3. Global Settings subscription
     const unsubSettings = onSnapshot(doc(db, 'settings', 'global'), (docSnap) => {

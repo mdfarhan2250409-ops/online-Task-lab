@@ -1,13 +1,13 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
-import { Zap, Shield, ExternalLink, Mail } from 'lucide-react';
+import { Zap, ExternalLink, Mail } from 'lucide-react';
 import { ResourceCategory } from '../types';
 import { OtlLogo } from './OtlLogo';
 import { BrandIcon } from './BrandIcons';
 
 export const Footer: React.FC = () => {
-  const { siteSettings, setSelectedCategory, setIsContactModalOpen, setIsAdminOpen } = useApp();
+  const { siteSettings, setSelectedCategory, setIsContactModalOpen } = useApp();
 
   const handleCategoryClick = (cat: ResourceCategory | 'all') => {
     setSelectedCategory(cat);
@@ -71,11 +71,6 @@ export const Footer: React.FC = () => {
             <li>
               <Link to="/contact" onClick={() => setIsContactModalOpen(true)} className="hover:text-[#5DE2E7] transition">
                 Contact & Support
-              </Link>
-            </li>
-            <li>
-              <Link to="/admin" onClick={() => setIsAdminOpen(true)} className="hover:text-[#5DE2E7] transition flex items-center gap-1">
-                <Shield className="w-3 h-3 text-[#5DE2E7]" /> Admin Panel
               </Link>
             </li>
           </ul>
@@ -152,7 +147,7 @@ export const Footer: React.FC = () => {
                 className="flex items-center gap-1.5 text-slate-300 hover:text-white transition"
               >
                 <ExternalLink className="w-3.5 h-3.5 text-[#5DE2E7]" />
-                <span>Admin Direct Contact</span>
+                <span>Direct Support Contact</span>
               </a>
             </li>
             {siteSettings.contactEmail && (

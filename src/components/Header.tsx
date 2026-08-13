@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
-import { Search, Send, Menu, Shield, Zap, Sliders, Smartphone, Layout, Bot, Monitor, Mail } from 'lucide-react';
+import { Search, Send, Menu, Zap, Sliders, Smartphone, Layout, Bot, Monitor, Mail } from 'lucide-react';
 import { ResourceCategory } from '../types';
 import { OtlLogo } from './OtlLogo';
 import { BrandIcon } from './BrandIcons';
@@ -13,7 +13,6 @@ export const Header: React.FC = () => {
     setSelectedCategory,
     setIsSearchModalOpen,
     setIsContactModalOpen,
-    setIsAdminOpen,
     isMobileSidebarOpen,
     setIsMobileSidebarOpen
   } = useApp();
@@ -155,18 +154,6 @@ export const Header: React.FC = () => {
             <Search className="w-4 h-4 text-[#5DE2E7] group-hover:scale-110 transition-transform" />
             <span className="text-xs text-slate-400 hidden sm:inline-block pr-1 font-medium">Search...</span>
           </Link>
-
-          {/* Admin Control Panel Entrance */}
-          <Link
-            to="/admin"
-            onClick={() => setIsAdminOpen(true)}
-            className="px-3 py-2 rounded-xl bg-[#133E87]/40 hover:bg-[#133E87]/70 text-slate-200 hover:text-white border border-[#5DE2E7]/30 transition-all flex items-center gap-1.5 text-xs font-semibold shadow-[0_0_10px_rgba(19,62,135,0.3)]"
-            title="Admin Management Panel"
-          >
-            <Shield className="w-3.5 h-3.5 text-[#5DE2E7]" />
-            <span className="hidden md:inline-block">Admin</span>
-          </Link>
-
 
           {/* Telegram Channel Button */}
           <a

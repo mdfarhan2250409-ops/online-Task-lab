@@ -16,7 +16,6 @@ import {
   Flame,
   Mail,
   Zap,
-  Shield,
   ExternalLink
 } from 'lucide-react';
 import { ResourceCategory } from '../types';
@@ -30,7 +29,6 @@ export const MobileSidebarNav: React.FC = () => {
     selectedCategory,
     setSelectedCategory,
     setIsContactModalOpen,
-    setIsAdminOpen,
     activeTag,
     setActiveTag
   } = useApp();
@@ -249,7 +247,7 @@ export const MobileSidebarNav: React.FC = () => {
             </div>
 
             {/* Bottom Actions */}
-            <div className="p-4 border-t border-white/10 bg-slate-950/60 space-y-2">
+            <div className="p-4 border-t border-white/10 bg-slate-950/60">
               <a
                 href={siteSettings.telegramChannel}
                 target="_blank"
@@ -259,17 +257,6 @@ export const MobileSidebarNav: React.FC = () => {
                 <BrandIcon name="telegram" className="w-4 h-4 text-white" />
                 <span>Join Official Telegram</span>
               </a>
-
-              <button
-                onClick={() => {
-                  setIsMobileSidebarOpen(false);
-                  setIsAdminOpen(true);
-                }}
-                className="w-full py-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white border border-white/10 text-xs font-semibold flex items-center justify-center gap-1.5"
-              >
-                <Shield className="w-3.5 h-3.5 text-[#5DE2E7]" />
-                <span>Admin Panel</span>
-              </button>
             </div>
           </motion.aside>
         </>

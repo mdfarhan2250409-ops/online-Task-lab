@@ -470,8 +470,8 @@ export const initialContactSettings: ContactPageSettings = {
   modalTitle: 'Contact & Support Center',
   heroBadge: '24/7 Fast Telegram Support',
   heroTitle: 'Need Assistance or Custom Mod Requests?',
-  heroSubtitle: 'Join our official Telegram Admin Desk for instant 1-on-1 support, broken link reports, or custom resource requests.',
-  telegramButtonText: 'Chat Direct with Admin',
+  heroSubtitle: 'Join our official Telegram Desk for instant 1-on-1 support, broken link reports, or custom resource requests.',
+  telegramButtonText: 'Chat Direct Support',
   telegramAdminUrl: 'https://t.me/OnlineTaskLabAdmin',
   formTitle: 'Send an Email Inquiry',
   faqTitle: 'Frequently Asked Questions (FAQ)',
@@ -527,7 +527,7 @@ export const initialContactSettings: ContactPageSettings = {
     {
       id: 'faq-3',
       question: 'Can I request a custom MOD APK, AI Prompt, or PC Software?',
-      answer: 'Absolutely! Send us a message using the form below or contact our Admin directly on Telegram. Your inquiry will be logged in our Admin Panel.'
+      answer: 'Absolutely! Send us a message using the form below or contact our Support team directly on Telegram.'
     }
   ]
 };
@@ -559,7 +559,7 @@ export const initialFloatingButtonsSettings: FloatingButtonsSettings = {
     },
     {
       id: 'fb-admin-support',
-      title: 'Admin Support',
+      title: 'Direct Support',
       url: 'https://t.me/OnlineTaskLabAdmin',
       icon: 'send',
       enabled: true,

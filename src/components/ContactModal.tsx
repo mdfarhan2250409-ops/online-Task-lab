@@ -119,7 +119,7 @@ export const ContactModal: React.FC = () => {
                   {contactSettings.heroTitle || 'Need Assistance or Custom Mod Requests?'}
                 </h4>
                 <p className="text-xs text-slate-300">
-                  {contactSettings.heroSubtitle || 'Get instant response from our admin or group moderators in real-time.'}
+                  {contactSettings.heroSubtitle || 'Get instant response from our support team or group moderators in real-time.'}
                 </p>
               </div>
 
@@ -130,7 +130,7 @@ export const ContactModal: React.FC = () => {
                 className="px-5 py-3 rounded-2xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-extrabold text-xs flex items-center gap-2 shadow-[0_0_20px_rgba(93,226,231,0.5)] shrink-0 hover:scale-105 transition"
               >
                 <BrandIcon name="telegram" className="w-4 h-4 text-white" />
-                <span>{contactSettings.telegramButtonText || 'Chat Direct with Admin'}</span>
+                <span>{contactSettings.telegramButtonText || 'Chat Direct Support'}</span>
               </a>
             </div>
 
@@ -243,7 +243,7 @@ export const ContactModal: React.FC = () => {
                   type="submit"
                   className="w-full py-3 rounded-xl bg-gradient-to-r from-[#133E87] to-cyan-600 hover:from-cyan-500 hover:to-blue-600 text-white font-bold text-xs shadow-lg transition"
                 >
-                  Send Inquiry to Admin Panel
+                  Send Inquiry Message
                 </button>
               </form>
             </div>
