@@ -74,7 +74,7 @@ export const HeroSection: React.FC = () => {
           className="text-base sm:text-lg text-slate-300 max-w-2xl mx-auto mb-8 leading-relaxed"
         >
           {homepageBuilder.heroSubtitle ||
-            'Apps, AI Prompts, Landing Pages, Lightroom Presets, PC Software & More'}
+            'Apps, AI Prompts, Landing Pages, Lightroom Presets & More'}
         </motion.p>
 
         {/* Action Buttons */}

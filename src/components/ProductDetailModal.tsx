@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
+import { useAuth } from '../context/AuthContext';
 import { BeforeAfterSlider } from './BeforeAfterSlider';
 import { motion, AnimatePresence } from 'motion/react';
 import {
@@ -13,7 +14,6 @@ import {
   Smartphone,
   HardDrive,
   Cpu,
-  Monitor,
   CheckCircle2,
   Sparkles,
   Bot,
@@ -29,17 +29,22 @@ export const ProductDetailModal: React.FC = () => {
     setTelegramDownloadModalResource,
     recordTelegramClick,
     resources,
+    categories,
     showToast
   } = useApp();
+
+  const { requireAuth } = useAuth();
 
   const [copied, setCopied] = useState(false);
   const [selectedGalleryImg, setSelectedGalleryImg] = useState<string | null>(null);
 
-  if (!activeResourceModal) return null;
-
   const resource = activeResourceModal;
 
   const handleCopyPrompt = () => {
+    if (!resource) return;
+    if (!requireAuth(undefined, '🔒 Account Required: Please log in or create an account to copy AI Prompts!')) {
+      return;
+    }
     if (resource.promptText) {
       navigator.clipboard.writeText(resource.promptText);
       setCopied(true);
@@ -49,22 +54,36 @@ export const ProductDetailModal: React.FC = () => {
   };
 
   const handleDownloadClick = () => {
+    if (!resource) return;
+    if (!requireAuth(() => setTelegramDownloadModalResource(resource), '🔒 Account Required: Please sign in or create an account to access downloads!')) {
+      return;
+    }
     setTelegramDownloadModalResource(resource);
   };
 
   const handleTelegramChannelClick = () => {
+    if (!resource) return;
+    if (!requireAuth(() => {
+      recordTelegramClick(resource.id);
+      window.open(resource.telegramUrl || resource.downloadUrl, '_blank');
+    }, '🔒 Account Required: Please sign in or create an account to access Telegram drops!')) {
+      return;
+    }
     recordTelegramClick(resource.id);
     window.open(resource.telegramUrl || resource.downloadUrl, '_blank');
   };
 
   // Find related resources in same category
-  const related = resources
-    .filter(r => r.category === resource.category && r.id !== resource.id)
-    .slice(0, 3);
+  const related = resource
+    ? resources
+        .filter(r => r.category === resource.category && r.id !== resource.id)
+        .slice(0, 3)
+    : [];
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
+      {resource && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
         {/* Backdrop */}
         <motion.div
           initial={{ opacity: 0 }}
@@ -85,7 +104,7 @@ export const ProductDetailModal: React.FC = () => {
           <div className="p-4 sm:p-6 border-b border-white/10 flex items-center justify-between bg-slate-950/40 shrink-0">
             <div className="flex items-center space-x-2">
               <span className="text-xs font-extrabold px-2.5 py-1 rounded-lg bg-[#5DE2E7]/20 text-[#5DE2E7] border border-[#5DE2E7]/30 uppercase tracking-widest">
-                {resource.category.replace('-', ' ')}
+                {categories.find(c => c.id === resource.category)?.name || resource.category.replace('-', ' ')}
               </span>
               <span className="text-xs text-slate-400 font-mono hidden sm:inline-block">
                 ID: {resource.id}
@@ -224,22 +243,6 @@ export const ProductDetailModal: React.FC = () => {
               </div>
             )}
 
-            {/* PC Software Requirements Section */}
-            {resource.category === 'pc-software' && resource.systemRequirements && (
-              <div className="p-4 rounded-2xl bg-slate-950/80 border border-cyan-500/30 space-y-2 text-xs">
-                <h4 className="font-extrabold text-cyan-300 uppercase tracking-wider flex items-center gap-1.5">
-                  <Monitor className="w-4 h-4" /> System Requirements
-                </h4>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-slate-300">
-                  <div><strong>OS:</strong> {resource.systemRequirements.os}</div>
-                  <div><strong>CPU:</strong> {resource.systemRequirements.processor}</div>
-                  <div><strong>RAM:</strong> {resource.systemRequirements.ram}</div>
-                  <div><strong>GPU:</strong> {resource.systemRequirements.gpu || 'N/A'}</div>
-                  <div><strong>Storage:</strong> {resource.systemRequirements.storage}</div>
-                </div>
-              </div>
-            )}
-
             {/* Apps APK Specs */}
             {resource.category === 'apps' && (
               <div className="p-4 rounded-2xl bg-slate-950/80 border border-emerald-500/30 space-y-2 text-xs">
@@ -248,24 +251,44 @@ export const ProductDetailModal: React.FC = () => {
                 </h4>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-slate-300">
                   <div><strong>Package:</strong> {resource.packageName || 'Com.mod.apk'}</div>
-                  <div><strong>Requirements:</strong> {resource.requirements || 'Android 8.0+'}</div>
-                  <div><strong>Mod Info:</strong> Premium Unlocked / No Ads / Pro Features</div>
+                  <div><strong>Requirements:</strong> {resource.requirements || 'Android 6.0+'}</div>
+                  <div className="sm:col-span-2"><strong>Mod Info:</strong> {resource.modInfo || 'Premium Unlocked / No Ads / Pro Features'}</div>
                 </div>
               </div>
             )}
 
-            {/* Landing Pages Live Demo */}
-            {resource.category === 'landing-pages' && resource.demoUrl && (
-              <div className="p-4 rounded-2xl bg-slate-950/80 border border-indigo-500/30 flex items-center justify-between">
+            {/* Lightroom Preset Specs */}
+            {resource.category === 'lr-presets' && (
+              <div className="p-4 rounded-2xl bg-slate-950/80 border border-amber-500/30 space-y-2 text-xs">
+                <h4 className="font-extrabold text-amber-300 uppercase tracking-wider flex items-center gap-1.5">
+                  <Sliders className="w-4 h-4" /> Preset Specifications & Compatibility
+                </h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-slate-300">
+                  <div><strong>Format:</strong> {resource.presetFormat || '.DNG / .XMP'}</div>
+                  <div><strong>Requirements:</strong> {resource.requirements || 'Lightroom CC / Mobile & Desktop'}</div>
+                  <div className="sm:col-span-2"><strong>Compatibility:</strong> {resource.modInfo || 'iOS, Android, Windows & Mac (One-Click Apply)'}</div>
+                </div>
+              </div>
+            )}
+
+            {/* Live Preview Demo Section (Landing Pages, LR Presets & Any Item with demoUrl) */}
+            {(Boolean(resource.demoUrl) || resource.category === 'landing-pages' || resource.category === 'lr-presets') && (
+              <div className="p-4 rounded-2xl bg-slate-950/80 border border-indigo-500/30 flex items-center justify-between gap-3">
                 <div>
                   <h4 className="text-xs font-bold text-indigo-300 uppercase tracking-wider">Live Preview Demo</h4>
-                  <p className="text-xs text-slate-400">Test template layout & animations in real time</p>
+                  <p className="text-xs text-slate-400">
+                    {resource.category === 'lr-presets'
+                      ? 'Test preset color grading & effects in real time'
+                      : resource.category === 'landing-pages'
+                      ? 'Test template layout & animations in real time'
+                      : 'Test and preview resource layout & features in real time'}
+                  </p>
                 </div>
                 <a
-                  href={resource.demoUrl}
+                  href={resource.demoUrl || resource.telegramUrl || 'https://t.me/OnlineTaskLab'}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-lg"
+                  className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-lg shrink-0 transition hover:scale-105"
                 >
                   <ExternalLink className="w-3.5 h-3.5" />
                   <span>Launch Demo</span>
@@ -340,6 +363,7 @@ export const ProductDetailModal: React.FC = () => {
 
         </motion.div>
       </div>
+      )}
     </AnimatePresence>
   );
 };

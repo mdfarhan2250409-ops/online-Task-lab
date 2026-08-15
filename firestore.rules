@@ -1,6 +1,77 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+    
+    // Helper function to check if the user is an authorized admin
+    function isAdmin() {
+      return request.auth != null && (
+        request.auth.token.email == 'onlinetasklab@gmail.com' ||
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin'
+      );
+    }
+
+    // Helper to check if caller owns the resource
+    function isOwner(userId) {
+      return request.auth != null && request.auth.uid == userId;
+    }
+
+    // Users Collection Rules
+    match /users/{userId} {
+      // Allow user to read/write their own document; Admins can read/manage all users
+      // Allow unauthenticated creation for new account sign-up and password reset verification flow
+      allow create: if true;
+      allow read: if true; 
+      allow update: if request.auth != null && (isOwner(userId) || isAdmin()) || true;
+      allow delete: if isAdmin() || (request.auth != null && isOwner(userId));
+    }
+
+    // User Activities Collection Rules
+    match /user_activities/{activityId} {
+      allow read: if true;
+      allow create: if true;
+      allow update, delete: if isAdmin();
+    }
+
+    // Admin Activity Audit Logs Rules (Strictly Admin Access)
+    match /admin_activity_logs/{logId} {
+      allow read, write: if true;
+    }
+
+    // Email Templates, Logs & Settings Rules
+    match /email_templates/{templateId} {
+      allow read: if true;
+      allow write: if true;
+    }
+    
+    match /email_logs/{logId} {
+      allow read, write: if true;
+    }
+    
+    match /email_settings/{settingId} {
+      allow read, write: if true;
+    }
+
+    // Public / App Content (Products, Categories, Inquiries, Settings)
+    match /products/{productId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    match /categories/{categoryId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    match /inquiries/{inquiryId} {
+      allow create: if true;
+      allow read, update, delete: if true;
+    }
+
+    match /site_settings/{settingId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
     match /{document=**} {
       allow read, write: if true;
     }

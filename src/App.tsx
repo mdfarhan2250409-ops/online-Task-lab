@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { AppProvider, useApp } from './context/AppContext';
+import { AuthProvider } from './context/AuthContext';
 import { SpaceParticles } from './components/SpaceParticles';
 import { SplashLoader } from './components/SplashLoader';
 import { Header } from './components/Header';
@@ -12,6 +13,9 @@ import { ProductDetailModal } from './components/ProductDetailModal';
 import { TelegramModal } from './components/TelegramModal';
 import { SearchModal } from './components/SearchModal';
 import { ContactModal } from './components/ContactModal';
+import { AuthModal } from './components/auth/AuthModal';
+import { UserProfileModal } from './components/auth/UserProfileModal';
+import { UnauthenticatedReminderModal } from './components/auth/UnauthenticatedReminderModal';
 import { NotFoundPage } from './components/NotFoundPage';
 import { FloatingTelegramButton } from './components/FloatingTelegramButton';
 import { Footer } from './components/Footer';
@@ -79,8 +83,8 @@ const MainLayout: React.FC = () => {
         )}
       </main>
 
-      {/* Floating Telegram Action Button */}
-      <FloatingTelegramButton />
+      {/* Floating Telegram Action Button (Hidden in Admin Panel) */}
+      {!isAdminOpen && <FloatingTelegramButton />}
 
       {/* Footer */}
       <Footer />
@@ -90,6 +94,9 @@ const MainLayout: React.FC = () => {
       <TelegramModal />
       <SearchModal />
       <ContactModal />
+      <AuthModal />
+      <UserProfileModal />
+      <UnauthenticatedReminderModal />
 
       {/* System Toast Notification */}
       <AnimatePresence>
@@ -111,8 +118,11 @@ const MainLayout: React.FC = () => {
 
 export default function App() {
   return (
-    <AppProvider>
-      <MainLayout />
-    </AppProvider>
+    <AuthProvider>
+      <AppProvider>
+        <MainLayout />
+      </AppProvider>
+    </AuthProvider>
   );
 }
+

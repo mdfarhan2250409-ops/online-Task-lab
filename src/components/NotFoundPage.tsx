@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { OtlLogo } from './OtlLogo';
-import { Home, ArrowLeft, Smartphone, Layout, Bot, Sliders, Monitor } from 'lucide-react';
+import { Home, ArrowLeft, Smartphone, Layout, Bot, Sliders } from 'lucide-react';
 
 export const NotFoundPage: React.FC = () => {
   const { setSelectedCategory } = useApp();
@@ -83,14 +83,6 @@ export const NotFoundPage: React.FC = () => {
             >
               <Sliders className="w-3.5 h-3.5 text-[#5DE2E7]" />
               LR Presets
-            </Link>
-            <Link
-              to="/category/pc-software"
-              onClick={() => setSelectedCategory('pc-software')}
-              className="px-3 py-1.5 rounded-xl bg-slate-900/80 hover:bg-slate-800 border border-white/10 text-xs text-slate-300 hover:text-white transition-all flex items-center gap-1.5"
-            >
-              <Monitor className="w-3.5 h-3.5 text-[#5DE2E7]" />
-              PC Software
             </Link>
           </div>
         </div>

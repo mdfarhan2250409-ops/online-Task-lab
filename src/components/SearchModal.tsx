@@ -9,14 +9,13 @@ export const SearchModal: React.FC = () => {
     isSearchModalOpen,
     setIsSearchModalOpen,
     resources,
+    categories,
     setActiveResourceModal,
     setTelegramDownloadModalResource
   } = useApp();
 
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCatFilter, setSelectedCatFilter] = useState<ResourceCategory | 'all'>('all');
-
-  if (!isSearchModalOpen) return null;
 
   const popularTags = ['Mod APK', 'Midjourney', 'ChatGPT', 'Lightroom', 'Preset', 'Photoshop', 'SaaS', 'Pro Unlocked'];
 
@@ -37,7 +36,8 @@ export const SearchModal: React.FC = () => {
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-start justify-center pt-16 sm:pt-24 px-4 pb-10">
+      {isSearchModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-start justify-center pt-16 sm:pt-24 px-4 pb-10">
         {/* Backdrop */}
         <motion.div
           initial={{ opacity: 0 }}
@@ -84,17 +84,27 @@ export const SearchModal: React.FC = () => {
           {/* Filter Pills */}
           <div className="px-4 py-3 border-b border-white/10 bg-slate-900/40 flex items-center gap-1.5 overflow-x-auto text-xs">
             <span className="text-slate-400 text-[11px] font-semibold uppercase pr-1">Filter:</span>
-            {(['all', 'apps', 'landing-pages', 'ai-prompts', 'lr-presets', 'pc-software'] as const).map(cat => (
+            <button
+              onClick={() => setSelectedCatFilter('all')}
+              className={`px-3 py-1 rounded-xl font-semibold capitalize whitespace-nowrap transition ${
+                selectedCatFilter === 'all'
+                  ? 'bg-[#5DE2E7] text-slate-950 shadow-[0_0_10px_#5DE2E7]'
+                  : 'bg-white/5 hover:bg-white/10 text-slate-300'
+              }`}
+            >
+              All Resources
+            </button>
+            {categories.map(cat => (
               <button
-                key={cat}
-                onClick={() => setSelectedCatFilter(cat)}
+                key={cat.id}
+                onClick={() => setSelectedCatFilter(cat.id)}
                 className={`px-3 py-1 rounded-xl font-semibold capitalize whitespace-nowrap transition ${
-                  selectedCatFilter === cat
+                  selectedCatFilter === cat.id
                     ? 'bg-[#5DE2E7] text-slate-950 shadow-[0_0_10px_#5DE2E7]'
                     : 'bg-white/5 hover:bg-white/10 text-slate-300'
                 }`}
               >
-                {cat === 'all' ? 'All Resources' : cat.replace('-', ' ')}
+                {cat.name}
               </button>
             ))}
           </div>
@@ -173,6 +183,7 @@ export const SearchModal: React.FC = () => {
           </div>
         </motion.div>
       </div>
+      )}
     </AnimatePresence>
   );
 };

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
+import { useAuth } from '../context/AuthContext';
 import { motion, AnimatePresence } from 'motion/react';
 import { X, Download, ShieldCheck, Zap, CheckCircle2 } from 'lucide-react';
 import { BrandIcon } from './BrandIcons';
@@ -13,6 +14,8 @@ export const TelegramModal: React.FC = () => {
     recordTelegramClick,
     showToast
   } = useApp();
+
+  const { requireAuth, recordUserDownload } = useAuth();
 
   const [countdown, setCountdown] = useState(3);
   const [isReady, setIsReady] = useState(false);
@@ -41,13 +44,16 @@ export const TelegramModal: React.FC = () => {
     return () => clearInterval(timer);
   }, [telegramDownloadModalResource]);
 
-  if (!telegramDownloadModalResource) return null;
-
   const resource = telegramDownloadModalResource;
 
   const handleOpenTelegramPost = () => {
+    if (!resource) return;
+    if (!requireAuth(undefined, '🔒 Account Required: Please log in or create an account to start your download!')) {
+      return;
+    }
     recordDownload(resource.id);
     recordTelegramClick(resource.id);
+    recordUserDownload(resource.id);
     showToast('Redirecting to Telegram download post...');
     window.open(resource.telegramUrl || resource.downloadUrl, '_blank');
     setTelegramDownloadModalResource(null);
@@ -60,7 +66,8 @@ export const TelegramModal: React.FC = () => {
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      {resource && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
         {/* Backdrop */}
         <motion.div
           initial={{ opacity: 0 }}
@@ -155,6 +162,7 @@ export const TelegramModal: React.FC = () => {
           </div>
         </motion.div>
       </div>
+      )}
     </AnimatePresence>
   );
 };

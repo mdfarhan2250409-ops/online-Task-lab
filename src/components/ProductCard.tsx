@@ -2,45 +2,46 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Resource } from '../types';
 import { useApp } from '../context/AppContext';
+import { useAuth } from '../context/AuthContext';
 import {
   Download,
   Send,
   Copy,
-  ExternalLink,
   Eye,
   Sliders,
   Check,
   Smartphone,
-  Layout,
-  Bot,
-  Monitor,
   HardDrive
 } from 'lucide-react';
 
 export const ProductCard: React.FC<{ resource: Resource }> = ({ resource }) => {
   const {
+    categories,
     setActiveResourceModal,
     setTelegramDownloadModalResource,
     recordTelegramClick,
     showToast
   } = useApp();
 
+  const { requireAuth } = useAuth();
+
   const [copied, setCopied] = React.useState(false);
 
   const getCategoryBadge = () => {
+    const foundCat = categories.find(c => c.id === resource.category);
+    const catName = foundCat ? foundCat.name.toUpperCase() : resource.category.toUpperCase().replace('-', ' ');
+
     switch (resource.category) {
       case 'apps':
-        return { label: 'APP', color: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30' };
+        return { label: catName || 'APP', color: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30' };
       case 'landing-pages':
-        return { label: 'LANDING PAGE', color: 'bg-indigo-500/20 text-indigo-300 border-indigo-500/30' };
+        return { label: catName || 'LANDING PAGE', color: 'bg-indigo-500/20 text-indigo-300 border-indigo-500/30' };
       case 'ai-prompts':
-        return { label: 'AI PROMPT', color: 'bg-purple-500/20 text-purple-300 border-purple-500/30' };
+        return { label: catName || 'AI PROMPT', color: 'bg-purple-500/20 text-purple-300 border-purple-500/30' };
       case 'lr-presets':
-        return { label: 'PRESET', color: 'bg-amber-500/20 text-amber-300 border-amber-500/30' };
-      case 'pc-software':
-        return { label: 'PC SOFTWARE', color: 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30' };
+        return { label: catName || 'PRESET', color: 'bg-amber-500/20 text-amber-300 border-amber-500/30' };
       default:
-        return { label: 'RESOURCE', color: 'bg-blue-500/20 text-blue-300 border-blue-500/30' };
+        return { label: catName || 'RESOURCE', color: 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30' };
     }
   };
 
@@ -49,6 +50,9 @@ export const ProductCard: React.FC<{ resource: Resource }> = ({ resource }) => {
   const handleCopyPrompt = (e: React.MouseEvent) => {
     e.stopPropagation();
     e.preventDefault();
+    if (!requireAuth(undefined, '🔒 Account Required: Please log in or create an account to copy AI Prompts!')) {
+      return;
+    }
     if (resource.promptText) {
       navigator.clipboard.writeText(resource.promptText);
       setCopied(true);
@@ -60,12 +64,21 @@ export const ProductCard: React.FC<{ resource: Resource }> = ({ resource }) => {
   const handleDownloadClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     e.preventDefault();
+    if (!requireAuth(() => setTelegramDownloadModalResource(resource), '🔒 Account Required: Please log in or create a free account to download this resource!')) {
+      return;
+    }
     setTelegramDownloadModalResource(resource);
   };
 
   const handleTelegramClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     e.preventDefault();
+    if (!requireAuth(() => {
+      recordTelegramClick(resource.id);
+      window.open(resource.telegramUrl || resource.downloadUrl, '_blank');
+    }, '🔒 Account Required: Please sign in or create an account to access our Telegram downloads.')) {
+      return;
+    }
     recordTelegramClick(resource.id);
     window.open(resource.telegramUrl || resource.downloadUrl, '_blank');
   };
@@ -192,4 +205,3 @@ export const ProductCard: React.FC<{ resource: Resource }> = ({ resource }) => {
     </Link>
   );
 };
-

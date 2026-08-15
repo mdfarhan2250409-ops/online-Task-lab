@@ -1,28 +1,27 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
+import { useAuth } from '../context/AuthContext';
 import { motion, AnimatePresence } from 'motion/react';
 import { OtlLogo } from './OtlLogo';
 import { BrandIcon } from './BrandIcons';
+import { CategoryIcon } from './CategoryIcon';
 import {
   X,
   Home,
-  Smartphone,
-  Layout,
-  Bot,
-  Sliders,
-  Monitor,
   Sparkles,
   Flame,
   Mail,
-  Zap,
-  ExternalLink
+  User,
+  ExternalLink,
+  ShieldCheck
 } from 'lucide-react';
 import { ResourceCategory } from '../types';
 
 export const MobileSidebarNav: React.FC = () => {
   const {
     siteSettings,
+    categories,
     mobileNavSettings,
     isMobileSidebarOpen,
     setIsMobileSidebarOpen,
@@ -33,10 +32,26 @@ export const MobileSidebarNav: React.FC = () => {
     setActiveTag
   } = useApp();
 
+  const {
+    currentUser,
+    isAuthenticated,
+    setIsAuthModalOpen,
+    setIsProfileModalOpen
+  } = useAuth();
+
   if (!mobileNavSettings.enabled) return null;
 
   const handleNavClick = (categoryFilter?: ResourceCategory | 'all' | 'featured' | 'trending', link?: string) => {
     setIsMobileSidebarOpen(false);
+
+    if (link === '#account') {
+      if (isAuthenticated && currentUser) {
+        setIsProfileModalOpen(true);
+      } else {
+        setIsAuthModalOpen(true, 'login');
+      }
+      return;
+    }
 
     if (link === '#contact') {
       setIsContactModalOpen(true);
@@ -66,52 +81,101 @@ export const MobileSidebarNav: React.FC = () => {
     <AnimatePresence>
       {isMobileSidebarOpen && (
         <>
-          {/* Dark Glass Overlay */}
+          {/* Backdrop Overlay */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setIsMobileSidebarOpen(false)}
-            className="fixed inset-0 z-50 bg-black/70 backdrop-blur-md lg:hidden"
+            className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md lg:hidden"
           />
 
-          {/* Fixed YouTube-style Left Sidebar */}
+          {/* Drawer Sidebar */}
           <motion.aside
             initial={{ x: '-100%' }}
             animate={{ x: 0 }}
             exit={{ x: '-100%' }}
             transition={{ type: 'spring', damping: 25, stiffness: 220 }}
-            className="fixed top-0 left-0 bottom-0 z-50 w-[280px] bg-[#0B1D51]/95 border-r border-[#5DE2E7]/25 glass-panel backdrop-blur-2xl text-white flex flex-col justify-between shadow-[0_0_50px_rgba(11,29,81,0.9)] lg:hidden overflow-y-auto"
+            className="fixed top-0 left-0 bottom-0 z-50 w-[85%] max-w-[320px] bg-slate-950 border-r border-white/10 flex flex-col justify-between overflow-y-auto lg:hidden"
           >
-            <div>
-              {/* Header inside Sidebar */}
-              <div className="p-4 border-b border-white/10 flex items-center justify-between bg-slate-950/40">
-                <div className="flex items-center space-x-2.5">
-                  <OtlLogo size="sm" animate={true} />
+            {/* Top Bar */}
+            <div className="p-4 border-b border-white/10 flex items-center justify-between">
+              <Link
+                to="/"
+                onClick={() => {
+                  setIsMobileSidebarOpen(false);
+                  setSelectedCategory('all');
+                }}
+                className="flex items-center space-x-2.5"
+              >
+                <OtlLogo size="sm" />
+                <div>
+                  <span className="font-extrabold text-base text-white tracking-tight">
+                    {siteSettings.logoText || 'OTL'}
+                  </span>
+                  <span className="text-[9px] text-slate-400 block -mt-1">
+                    Online Task Lab
+                  </span>
+                </div>
+              </Link>
+
+              <button
+                onClick={() => setIsMobileSidebarOpen(false)}
+                className="p-1.5 rounded-xl bg-white/5 text-slate-400 hover:text-white"
+                aria-label="Close menu"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* User Account Card */}
+            <div className="p-3 mx-4 mt-3 rounded-2xl bg-gradient-to-r from-[#133E87]/40 via-cyan-950/30 to-[#0B1D51]/50 border border-[#5DE2E7]/30">
+              <button
+                onClick={() => handleNavClick(undefined, '#account')}
+                className="w-full flex items-center justify-between text-left"
+              >
+                <div className="flex items-center gap-2.5">
+                  {isAuthenticated && currentUser?.photoURL ? (
+                    <img
+                      src={currentUser.photoURL}
+                      alt={currentUser.firstName}
+                      className="w-8 h-8 rounded-xl object-cover border border-[#5DE2E7]"
+                    />
+                  ) : (
+                    <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-[#133E87] to-cyan-500 flex items-center justify-center text-white text-xs font-black">
+                      {isAuthenticated && currentUser ? currentUser.firstName?.[0]?.toUpperCase() : <User className="w-4 h-4" />}
+                    </div>
+                  )}
                   <div>
-                    <span className="font-extrabold text-base tracking-wide text-white block leading-tight">
-                      {siteSettings.logoText || 'OTL'}
-                    </span>
-                    <span className="text-[10px] text-[#5DE2E7] tracking-wider uppercase font-semibold">
-                      Online Task Lab
-                    </span>
+                    <div className="flex items-center gap-1.5">
+                      <p className="text-xs font-bold text-white">
+                        {isAuthenticated && currentUser ? `${currentUser.firstName} ${currentUser.lastName}` : 'My Account'}
+                      </p>
+                      {currentUser?.role === 'admin' && (
+                        <span className="text-[8px] uppercase px-1 py-0.2 rounded bg-purple-500/30 text-purple-300 font-bold border border-purple-400/40">
+                          Admin
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-[10px] text-cyan-300">
+                      {isAuthenticated && currentUser ? `@${currentUser.username}` : 'Tap to Login or Register'}
+                    </p>
                   </div>
                 </div>
 
-                <button
-                  onClick={() => setIsMobileSidebarOpen(false)}
-                  className="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition"
-                >
-                  <X className="w-5 h-5" />
-                </button>
+                <div className="text-[10px] px-2 py-1 rounded-lg bg-white/10 text-white font-bold">
+                  {isAuthenticated ? 'Profile' : 'Sign In'}
+                </div>
+              </button>
+            </div>
+
+            {/* Nav Links Body */}
+            <div className="p-4 space-y-4 flex-1">
+              <div className="text-[10px] uppercase tracking-widest text-[#5DE2E7]/70 font-bold px-3">
+                Main Navigation
               </div>
 
-              {/* Navigation Items List */}
-              <div className="p-3 space-y-1">
-                <div className="px-3 py-1 text-[10px] uppercase tracking-widest text-[#5DE2E7]/70 font-bold">
-                  Main Navigation
-                </div>
-
+              <div className="space-y-1">
                 <button
                   onClick={() => handleNavClick('all')}
                   className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all ${
@@ -126,81 +190,25 @@ export const MobileSidebarNav: React.FC = () => {
                   </div>
                 </button>
 
-                <button
-                  onClick={() => handleNavClick('apps')}
-                  className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all ${
-                    selectedCategory === 'apps'
-                      ? 'bg-gradient-to-r from-[#133E87] to-cyan-500/80 text-white shadow-[0_0_15px_rgba(93,226,231,0.4)] border border-[#5DE2E7]/40'
-                      : 'text-slate-200 hover:bg-white/5 hover:text-white'
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <Smartphone className="w-4 h-4 text-[#5DE2E7]" />
-                    <span>Mobile Apps</span>
-                  </div>
-                  <span className="text-[9px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 font-bold border border-amber-500/30">
-                    Hot
-                  </span>
-                </button>
-
-                <button
-                  onClick={() => handleNavClick('landing-pages')}
-                  className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all ${
-                    selectedCategory === 'landing-pages'
-                      ? 'bg-gradient-to-r from-[#133E87] to-cyan-500/80 text-white shadow-[0_0_15px_rgba(93,226,231,0.4)] border border-[#5DE2E7]/40'
-                      : 'text-slate-200 hover:bg-white/5 hover:text-white'
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <Layout className="w-4 h-4 text-[#5DE2E7]" />
-                    <span>Landing Pages</span>
-                  </div>
-                </button>
-
-                <button
-                  onClick={() => handleNavClick('ai-prompts')}
-                  className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all ${
-                    selectedCategory === 'ai-prompts'
-                      ? 'bg-gradient-to-r from-[#133E87] to-cyan-500/80 text-white shadow-[0_0_15px_rgba(93,226,231,0.4)] border border-[#5DE2E7]/40'
-                      : 'text-slate-200 hover:bg-white/5 hover:text-white'
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <Bot className="w-4 h-4 text-[#5DE2E7]" />
-                    <span>AI Prompts</span>
-                  </div>
-                  <span className="text-[9px] px-1.5 py-0.5 rounded bg-[#5DE2E7]/20 text-[#5DE2E7] font-bold border border-[#5DE2E7]/30">
-                    New
-                  </span>
-                </button>
-
-                <button
-                  onClick={() => handleNavClick('lr-presets')}
-                  className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all ${
-                    selectedCategory === 'lr-presets'
-                      ? 'bg-gradient-to-r from-[#133E87] to-cyan-500/80 text-white shadow-[0_0_15px_rgba(93,226,231,0.4)] border border-[#5DE2E7]/40'
-                      : 'text-slate-200 hover:bg-white/5 hover:text-white'
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <Sliders className="w-4 h-4 text-[#5DE2E7]" />
-                    <span>Lightroom Presets</span>
-                  </div>
-                </button>
-
-                <button
-                  onClick={() => handleNavClick('pc-software')}
-                  className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all ${
-                    selectedCategory === 'pc-software'
-                      ? 'bg-gradient-to-r from-[#133E87] to-cyan-500/80 text-white shadow-[0_0_15px_rgba(93,226,231,0.4)] border border-[#5DE2E7]/40'
-                      : 'text-slate-200 hover:bg-white/5 hover:text-white'
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <Monitor className="w-4 h-4 text-[#5DE2E7]" />
-                    <span>PC Software</span>
-                  </div>
-                </button>
+                {categories.map(cat => {
+                  const isActive = selectedCategory === cat.id && !activeTag;
+                  return (
+                    <button
+                      key={cat.id}
+                      onClick={() => handleNavClick(cat.id)}
+                      className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all ${
+                        isActive
+                          ? 'bg-gradient-to-r from-[#133E87] to-cyan-500/80 text-white shadow-[0_0_15px_rgba(93,226,231,0.4)] border border-[#5DE2E7]/40'
+                          : 'text-slate-200 hover:bg-white/5 hover:text-white'
+                      }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <CategoryIcon name={cat.icon || cat.id} className="w-4 h-4 text-[#5DE2E7]" />
+                        <span>{cat.name}</span>
+                      </div>
+                    </button>
+                  );
+                })}
 
                 <div className="my-3 border-t border-white/10" />
 
@@ -264,3 +272,4 @@ export const MobileSidebarNav: React.FC = () => {
     </AnimatePresence>
   );
 };
+

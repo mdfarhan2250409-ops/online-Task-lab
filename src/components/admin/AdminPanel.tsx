@@ -11,6 +11,8 @@ import { AdminSplashSettings } from './AdminSplashSettings';
 import { AdminMobileNavSettings } from './AdminMobileNavSettings';
 import { AdminAdsManager } from './AdminAdsManager';
 import { AdminContactManager } from './AdminContactManager';
+import { AdminUserManagement } from './AdminUserManagement';
+import { AdminEmailManager } from './AdminEmailManager';
 import { motion } from 'motion/react';
 import {
   Shield,
@@ -24,6 +26,7 @@ import {
   Megaphone,
   FolderTree,
   Mail,
+  Users,
   Lock,
   Eye,
   EyeOff,
@@ -50,7 +53,7 @@ export const AdminPanel: React.FC = () => {
   const [loginError, setLoginError] = useState('');
 
   const [activeTab, setActiveTab] = useState<
-    'dashboard' | 'products' | 'categories' | 'contact' | 'settings' | 'homepage' | 'telegram' | 'splash' | 'mobilenav' | 'ads'
+    'dashboard' | 'users' | 'email' | 'products' | 'categories' | 'contact' | 'settings' | 'homepage' | 'telegram' | 'splash' | 'mobilenav' | 'ads'
   >('dashboard');
 
   const unreadInquiriesCount = inquiries ? inquiries.filter(i => i.status === 'unread').length : 0;
@@ -256,6 +259,28 @@ export const AdminPanel: React.FC = () => {
             </button>
 
             <button
+              onClick={() => setActiveTab('users')}
+              className={`px-4 py-2.5 rounded-xl font-bold flex items-center gap-2 whitespace-nowrap transition ${
+                activeTab === 'users'
+                  ? 'bg-gradient-to-r from-[#133E87] to-cyan-500 text-white shadow-[0_0_15px_rgba(93,226,231,0.4)] border border-[#5DE2E7]/40'
+                  : 'text-slate-300 hover:bg-white/5'
+              }`}
+            >
+              <Users className="w-4 h-4 text-[#5DE2E7]" /> Users Management
+            </button>
+
+            <button
+              onClick={() => setActiveTab('email')}
+              className={`px-4 py-2.5 rounded-xl font-bold flex items-center gap-2 whitespace-nowrap transition ${
+                activeTab === 'email'
+                  ? 'bg-gradient-to-r from-[#133E87] to-cyan-500 text-white shadow-[0_0_15px_rgba(93,226,231,0.4)] border border-[#5DE2E7]/40'
+                  : 'text-slate-300 hover:bg-white/5'
+              }`}
+            >
+              <Mail className="w-4 h-4 text-[#5DE2E7]" /> Email & OTP
+            </button>
+
+            <button
               onClick={() => setActiveTab('products')}
               className={`px-4 py-2.5 rounded-xl font-bold flex items-center gap-2 whitespace-nowrap transition ${
                 activeTab === 'products'
@@ -363,6 +388,8 @@ export const AdminPanel: React.FC = () => {
           {/* Active Panel Component Container */}
           <div className="p-4 sm:p-6 rounded-3xl glass-panel border border-white/10 bg-[#0B1D51]/70 shadow-[0_0_40px_rgba(11,29,81,0.6)]">
             {activeTab === 'dashboard' && <AdminDashboard />}
+            {activeTab === 'users' && <AdminUserManagement />}
+            {activeTab === 'email' && <AdminEmailManager />}
             {activeTab === 'products' && <AdminProducts />}
             {activeTab === 'categories' && <AdminCategories />}
             {activeTab === 'contact' && <AdminContactManager />}

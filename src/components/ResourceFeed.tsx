@@ -3,11 +3,6 @@ import { useApp } from '../context/AppContext';
 import { ProductCard } from './ProductCard';
 import { ResourceCategory } from '../types';
 import {
-  Smartphone,
-  Layout,
-  Bot,
-  Sliders,
-  Monitor,
   Grid,
   List,
   Filter,
@@ -17,10 +12,12 @@ import {
   Layers
 } from 'lucide-react';
 import { AdBanner } from './AdBanner';
+import { CategoryIcon } from './CategoryIcon';
 
 export const ResourceFeed: React.FC = () => {
   const {
     resources,
+    categories,
     selectedCategory,
     setSelectedCategory,
     activeTag,
@@ -124,75 +121,26 @@ export const ResourceFeed: React.FC = () => {
             All Resources
           </button>
 
-          <button
-            onClick={() => {
-              setSelectedCategory('apps');
-              setActiveTag(null);
-            }}
-            className={`px-3 py-1.5 rounded-xl font-bold transition flex items-center gap-1.5 ${
-              selectedCategory === 'apps'
-                ? 'bg-[#5DE2E7] text-slate-950 shadow-[0_0_12px_#5DE2E7]'
-                : 'bg-white/5 hover:bg-white/10 text-slate-300'
-            }`}
-          >
-            <Smartphone className="w-3.5 h-3.5" /> Mobile Apps
-          </button>
-
-          <button
-            onClick={() => {
-              setSelectedCategory('landing-pages');
-              setActiveTag(null);
-            }}
-            className={`px-3 py-1.5 rounded-xl font-bold transition flex items-center gap-1.5 ${
-              selectedCategory === 'landing-pages'
-                ? 'bg-[#5DE2E7] text-slate-950 shadow-[0_0_12px_#5DE2E7]'
-                : 'bg-white/5 hover:bg-white/10 text-slate-300'
-            }`}
-          >
-            <Layout className="w-3.5 h-3.5" /> Landing Pages
-          </button>
-
-          <button
-            onClick={() => {
-              setSelectedCategory('ai-prompts');
-              setActiveTag(null);
-            }}
-            className={`px-3 py-1.5 rounded-xl font-bold transition flex items-center gap-1.5 ${
-              selectedCategory === 'ai-prompts'
-                ? 'bg-[#5DE2E7] text-slate-950 shadow-[0_0_12px_#5DE2E7]'
-                : 'bg-white/5 hover:bg-white/10 text-slate-300'
-            }`}
-          >
-            <Bot className="w-3.5 h-3.5" /> AI Prompts
-          </button>
-
-          <button
-            onClick={() => {
-              setSelectedCategory('lr-presets');
-              setActiveTag(null);
-            }}
-            className={`px-3 py-1.5 rounded-xl font-bold transition flex items-center gap-1.5 ${
-              selectedCategory === 'lr-presets'
-                ? 'bg-[#5DE2E7] text-slate-950 shadow-[0_0_12px_#5DE2E7]'
-                : 'bg-white/5 hover:bg-white/10 text-slate-300'
-            }`}
-          >
-            <Sliders className="w-3.5 h-3.5" /> LR Presets
-          </button>
-
-          <button
-            onClick={() => {
-              setSelectedCategory('pc-software');
-              setActiveTag(null);
-            }}
-            className={`px-3 py-1.5 rounded-xl font-bold transition flex items-center gap-1.5 ${
-              selectedCategory === 'pc-software'
-                ? 'bg-[#5DE2E7] text-slate-950 shadow-[0_0_12px_#5DE2E7]'
-                : 'bg-white/5 hover:bg-white/10 text-slate-300'
-            }`}
-          >
-            <Monitor className="w-3.5 h-3.5" /> PC Software
-          </button>
+          {categories.map(cat => {
+            const isActive = selectedCategory === cat.id && !activeTag;
+            return (
+              <button
+                key={cat.id}
+                onClick={() => {
+                  setSelectedCategory(cat.id);
+                  setActiveTag(null);
+                }}
+                className={`px-3 py-1.5 rounded-xl font-bold transition flex items-center gap-1.5 whitespace-nowrap ${
+                  isActive
+                    ? 'bg-[#5DE2E7] text-slate-950 shadow-[0_0_12px_#5DE2E7]'
+                    : 'bg-white/5 hover:bg-white/10 text-slate-300'
+                }`}
+              >
+                <CategoryIcon name={cat.icon || cat.id} className="w-3.5 h-3.5" />
+                <span>{cat.name}</span>
+              </button>
+            );
+          })}
 
           <div className="h-4 w-[1px] bg-white/20 mx-1 hidden sm:block" />
 

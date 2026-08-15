@@ -7,7 +7,7 @@ import { OtlLogo } from './OtlLogo';
 import { BrandIcon } from './BrandIcons';
 
 export const Footer: React.FC = () => {
-  const { siteSettings, setSelectedCategory, setIsContactModalOpen } = useApp();
+  const { siteSettings, categories, setSelectedCategory, setIsContactModalOpen } = useApp();
 
   const handleCategoryClick = (cat: ResourceCategory | 'all') => {
     setSelectedCategory(cat);
@@ -33,7 +33,7 @@ export const Footer: React.FC = () => {
           </Link>
 
           <p className="text-xs text-slate-400 leading-relaxed">
-            {siteSettings.tagline || 'Apps • AI Prompts • Landing Pages • Lightroom Presets • PC Software'}
+            {siteSettings.tagline || 'Apps • AI Prompts • Landing Pages • Lightroom Presets'}
           </p>
 
           {siteSettings.contactEmail && (
@@ -82,31 +82,17 @@ export const Footer: React.FC = () => {
             Categories
           </h4>
           <ul className="space-y-2 text-xs">
-            <li>
-              <Link to="/category/apps" onClick={() => handleCategoryClick('apps')} className="hover:text-[#5DE2E7] transition">
-                Mobile Apps (Mod APKs)
-              </Link>
-            </li>
-            <li>
-              <Link to="/category/landing-pages" onClick={() => handleCategoryClick('landing-pages')} className="hover:text-[#5DE2E7] transition">
-                Landing Page Templates
-              </Link>
-            </li>
-            <li>
-              <Link to="/category/ai-prompts" onClick={() => handleCategoryClick('ai-prompts')} className="hover:text-[#5DE2E7] transition">
-                AI Prompts (Midjourney/GPT)
-              </Link>
-            </li>
-            <li>
-              <Link to="/category/lr-presets" onClick={() => handleCategoryClick('lr-presets')} className="hover:text-[#5DE2E7] transition">
-                Lightroom Presets (DNG/XMP)
-              </Link>
-            </li>
-            <li>
-              <Link to="/category/pc-software" onClick={() => handleCategoryClick('pc-software')} className="hover:text-[#5DE2E7] transition">
-                PC Software (Pre-Activated)
-              </Link>
-            </li>
+            {categories.map(cat => (
+              <li key={cat.id}>
+                <Link
+                  to={`/category/${cat.id}`}
+                  onClick={() => handleCategoryClick(cat.id)}
+                  className="hover:text-[#5DE2E7] transition flex items-center gap-1.5"
+                >
+                  <span>{cat.name}</span>
+                </Link>
+              </li>
+            ))}
           </ul>
         </div>
 

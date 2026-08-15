@@ -3,12 +3,6 @@ import { useApp } from '../context/AppContext';
 import { ProductCard } from './ProductCard';
 import { ResourceCategory } from '../types';
 import {
-  Smartphone,
-  Layout,
-  Bot,
-  Sliders,
-  Monitor,
-  Layers,
   ArrowLeft,
   Home,
   ChevronRight,
@@ -24,6 +18,7 @@ import {
 } from 'lucide-react';
 import { AdBanner } from './AdBanner';
 import { motion } from 'motion/react';
+import { CategoryIcon } from './CategoryIcon';
 
 export const CategoryPage: React.FC = () => {
   const {
@@ -41,60 +36,39 @@ export const CategoryPage: React.FC = () => {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
   // Find active category details
-  const currentCategoryObj = categories.find(c => c.id === selectedCategory);
+  const currentCategoryObj = categories.find(c => c.id === selectedCategory || c.slug === selectedCategory);
   const categoryName = currentCategoryObj?.name || selectedCategory.replace('-', ' ');
   const categoryDescription = currentCategoryObj?.description || `Explore our curated selection of verified ${categoryName} resources.`;
   const categoryBanner = currentCategoryObj?.banner || 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?auto=format&fit=crop&w=1200&q=80';
-
-  const getCategoryIcon = (iconName?: string) => {
-    switch (iconName?.toLowerCase() || selectedCategory) {
-      case 'smartphone':
-      case 'apps':
-        return <Smartphone className="w-7 h-7 text-[#5DE2E7]" />;
-      case 'layout':
-      case 'landing-pages':
-        return <Layout className="w-7 h-7 text-[#5DE2E7]" />;
-      case 'bot':
-      case 'ai-prompts':
-        return <Bot className="w-7 h-7 text-[#5DE2E7]" />;
-      case 'sliders':
-      case 'lr-presets':
-        return <Sliders className="w-7 h-7 text-[#5DE2E7]" />;
-      case 'monitor':
-      case 'pc-software':
-        return <Monitor className="w-7 h-7 text-[#5DE2E7]" />;
-      default:
-        return <Layers className="w-7 h-7 text-[#5DE2E7]" />;
-    }
-  };
 
   // Filter resources for this specific category + search + tag
   const categoryResources = resources.filter(res => res.category === selectedCategory);
 
   const filteredResources = categoryResources.filter(res => {
+    const resTags = res.tags || [];
     const matchesSearch = searchQuery === '' ||
       res.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       res.shortDescription.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      res.tags.some(t => t.toLowerCase().includes(searchQuery.toLowerCase()));
+      resTags.some(t => t.toLowerCase().includes(searchQuery.toLowerCase()));
 
     let matchesTag = true;
     if (activeTag === 'featured') matchesTag = res.isFeatured;
     if (activeTag === 'trending') matchesTag = res.isTrending;
-    else if (activeTag) matchesTag = res.tags.includes(activeTag);
+    else if (activeTag) matchesTag = resTags.includes(activeTag);
 
     return matchesSearch && matchesTag;
   });
 
   // Sort resources
   const sortedResources = [...filteredResources].sort((a, b) => {
-    if (sortBy === 'downloads') return b.downloadsCount - a.downloadsCount;
+    if (sortBy === 'downloads') return (b.downloadsCount || 0) - (a.downloadsCount || 0);
     if (sortBy === 'title') return a.title.localeCompare(b.title);
     return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
   });
 
   // Extract category specific tags
   const allCategoryTags = Array.from(
-    new Set(categoryResources.flatMap(r => r.tags))
+    new Set(categoryResources.flatMap(r => r.tags || []))
   );
 
   return (
@@ -148,7 +122,7 @@ export const CategoryPage: React.FC = () => {
           <div className="flex items-start gap-4 sm:gap-5">
             {/* Category Icon Box */}
             <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-br from-[#133E87] to-[#0B1D51] border border-[#5DE2E7]/50 flex items-center justify-center shrink-0 shadow-[0_0_25px_rgba(93,226,231,0.35)]">
-              {getCategoryIcon(currentCategoryObj?.icon)}
+              <CategoryIcon name={currentCategoryObj?.icon || selectedCategory} className="w-7 h-7 sm:w-8 sm:h-8 text-[#5DE2E7]" />
             </div>
 
             <div className="space-y-1.5">

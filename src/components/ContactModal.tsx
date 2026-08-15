@@ -34,8 +34,6 @@ export const ContactModal: React.FC = () => {
   const [message, setMessage] = useState('');
   const [openFaq, setOpenFaq] = useState<string | null>(null);
 
-  if (!isContactModalOpen) return null;
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || !subject || !message) return;
@@ -75,7 +73,8 @@ export const ContactModal: React.FC = () => {
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto">
+      {isContactModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto">
         {/* Backdrop */}
         <motion.div
           initial={{ opacity: 0 }}
@@ -286,6 +285,7 @@ export const ContactModal: React.FC = () => {
           </div>
         </motion.div>
       </div>
+      )}
     </AnimatePresence>
   );
 };

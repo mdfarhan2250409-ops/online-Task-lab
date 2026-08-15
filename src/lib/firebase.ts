@@ -3,6 +3,7 @@ import {
   getFirestore,
   collection,
   doc,
+  getDoc,
   getDocs,
   setDoc,
   addDoc,
@@ -10,10 +11,25 @@ import {
   deleteDoc,
   onSnapshot,
   query,
+  where,
+  limit,
   orderBy,
   serverTimestamp,
   increment
 } from 'firebase/firestore';
+import {
+  getAuth,
+  GoogleAuthProvider,
+  signInWithPopup,
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  signOut,
+  updateProfile,
+  onAuthStateChanged,
+  updatePassword,
+  sendPasswordResetEmail,
+  type User as FirebaseUser
+} from 'firebase/auth';
 import firebaseConfigJson from '../../firebase-applet-config.json';
 
 // User provided config fallback or system provisioned config
@@ -38,17 +54,21 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase App
-const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+export const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 
 // Initialize Firestore
-// If firestoreDatabaseId exists in config and is custom, specify it, else default
 export const db = firebaseConfigJson.firestoreDatabaseId && firebaseConfigJson.firestoreDatabaseId !== '(default)'
   ? getFirestore(app, firebaseConfigJson.firestoreDatabaseId)
   : getFirestore(app);
 
+// Initialize Firebase Auth
+export const auth = getAuth(app);
+export const googleAuthProvider = new GoogleAuthProvider();
+
 export {
   collection,
   doc,
+  getDoc,
   getDocs,
   setDoc,
   addDoc,
@@ -56,7 +76,19 @@ export {
   deleteDoc,
   onSnapshot,
   query,
+  where,
+  limit,
   orderBy,
   serverTimestamp,
-  increment
+  increment,
+  signInWithPopup,
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  signOut,
+  updateProfile,
+  onAuthStateChanged,
+  updatePassword,
+  sendPasswordResetEmail
 };
+export type { FirebaseUser };
+

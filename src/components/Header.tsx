@@ -1,14 +1,17 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
-import { Search, Send, Menu, Zap, Sliders, Smartphone, Layout, Bot, Monitor, Mail } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
+import { Search, Menu, Mail, User, ShieldCheck } from 'lucide-react';
 import { ResourceCategory } from '../types';
 import { OtlLogo } from './OtlLogo';
 import { BrandIcon } from './BrandIcons';
+import { CategoryIcon } from './CategoryIcon';
 
 export const Header: React.FC = () => {
   const {
     siteSettings,
+    categories,
     selectedCategory,
     setSelectedCategory,
     setIsSearchModalOpen,
@@ -17,9 +20,24 @@ export const Header: React.FC = () => {
     setIsMobileSidebarOpen
   } = useApp();
 
+  const {
+    currentUser,
+    isAuthenticated,
+    setIsAuthModalOpen,
+    setIsProfileModalOpen
+  } = useAuth();
+
   const handleCategoryClick = (cat: ResourceCategory | 'all') => {
     setSelectedCategory(cat);
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleAccountClick = () => {
+    if (isAuthenticated && currentUser) {
+      setIsProfileModalOpen(true);
+    } else {
+      setIsAuthModalOpen(true, 'login');
+    }
   };
 
   return (
@@ -60,11 +78,11 @@ export const Header: React.FC = () => {
         </div>
 
         {/* Center: Navigation Menu (Desktop) */}
-        <nav className="hidden lg:flex items-center space-x-1 bg-slate-900/40 p-1.5 rounded-2xl border border-white/10">
+        <nav className="hidden lg:flex items-center space-x-1 bg-slate-900/40 p-1.5 rounded-2xl border border-white/10 overflow-x-auto max-w-[55vw]">
           <Link
             to="/"
             onClick={() => handleCategoryClick('all')}
-            className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+            className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all whitespace-nowrap ${
               selectedCategory === 'all'
                 ? 'bg-gradient-to-r from-[#133E87] to-cyan-500/80 text-white shadow-[0_0_12px_rgba(93,226,231,0.4)]'
                 : 'text-slate-300 hover:text-white hover:bg-white/5'
@@ -72,78 +90,38 @@ export const Header: React.FC = () => {
           >
             Home
           </Link>
-          <Link
-            to="/category/apps"
-            onClick={() => handleCategoryClick('apps')}
-            className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 ${
-              selectedCategory === 'apps'
-                ? 'bg-gradient-to-r from-[#133E87] to-cyan-500/80 text-white shadow-[0_0_12px_rgba(93,226,231,0.4)]'
-                : 'text-slate-300 hover:text-white hover:bg-white/5'
-            }`}
-          >
-            <Smartphone className="w-3.5 h-3.5 text-[#5DE2E7]" />
-            Apps
-          </Link>
-          <Link
-            to="/category/landing-pages"
-            onClick={() => handleCategoryClick('landing-pages')}
-            className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 ${
-              selectedCategory === 'landing-pages'
-                ? 'bg-gradient-to-r from-[#133E87] to-cyan-500/80 text-white shadow-[0_0_12px_rgba(93,226,231,0.4)]'
-                : 'text-slate-300 hover:text-white hover:bg-white/5'
-            }`}
-          >
-            <Layout className="w-3.5 h-3.5 text-[#5DE2E7]" />
-            Landing Pages
-          </Link>
-          <Link
-            to="/category/ai-prompts"
-            onClick={() => handleCategoryClick('ai-prompts')}
-            className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 ${
-              selectedCategory === 'ai-prompts'
-                ? 'bg-gradient-to-r from-[#133E87] to-cyan-500/80 text-white shadow-[0_0_12px_rgba(93,226,231,0.4)]'
-                : 'text-slate-300 hover:text-white hover:bg-white/5'
-            }`}
-          >
-            <Bot className="w-3.5 h-3.5 text-[#5DE2E7]" />
-            AI Prompts
-          </Link>
-          <Link
-            to="/category/lr-presets"
-            onClick={() => handleCategoryClick('lr-presets')}
-            className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 ${
-              selectedCategory === 'lr-presets'
-                ? 'bg-gradient-to-r from-[#133E87] to-cyan-500/80 text-white shadow-[0_0_12px_rgba(93,226,231,0.4)]'
-                : 'text-slate-300 hover:text-white hover:bg-white/5'
-            }`}
-          >
-            <Sliders className="w-3.5 h-3.5 text-[#5DE2E7]" />
-            LR Presets
-          </Link>
-          <Link
-            to="/category/pc-software"
-            onClick={() => handleCategoryClick('pc-software')}
-            className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 ${
-              selectedCategory === 'pc-software'
-                ? 'bg-gradient-to-r from-[#133E87] to-cyan-500/80 text-white shadow-[0_0_12px_rgba(93,226,231,0.4)]'
-                : 'text-slate-300 hover:text-white hover:bg-white/5'
-            }`}
-          >
-            <Monitor className="w-3.5 h-3.5 text-[#5DE2E7]" />
-            PC Software
-          </Link>
+
+          {categories.map(cat => {
+            const isActive = selectedCategory === cat.id;
+            return (
+              <Link
+                key={cat.id}
+                to={`/category/${cat.id}`}
+                onClick={() => handleCategoryClick(cat.id)}
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 whitespace-nowrap ${
+                  isActive
+                    ? 'bg-gradient-to-r from-[#133E87] to-cyan-500/80 text-white shadow-[0_0_12px_rgba(93,226,231,0.4)]'
+                    : 'text-slate-300 hover:text-white hover:bg-white/5'
+                }`}
+              >
+                <CategoryIcon name={cat.icon || cat.id} className="w-3.5 h-3.5 text-[#5DE2E7]" />
+                <span>{cat.name}</span>
+              </Link>
+            );
+          })}
+
           <Link
             to="/contact"
             onClick={() => setIsContactModalOpen(true)}
-            className="px-3.5 py-1.5 rounded-xl text-xs font-semibold text-slate-300 hover:text-white hover:bg-white/5 transition-all flex items-center gap-1.5"
+            className="px-3.5 py-1.5 rounded-xl text-xs font-semibold text-slate-300 hover:text-white hover:bg-white/5 transition-all flex items-center gap-1.5 whitespace-nowrap"
           >
             <Mail className="w-3.5 h-3.5 text-[#5DE2E7]" />
             Contact
           </Link>
         </nav>
 
-        {/* Right: Actions (Search, Admin, Telegram) */}
-        <div className="flex items-center space-x-2.5">
+        {/* Right: Actions (Search, Telegram, My Account) */}
+        <div className="flex items-center space-x-2">
           {/* Search Button */}
           <Link
             to="/search"
@@ -152,7 +130,7 @@ export const Header: React.FC = () => {
             title="Search Resources"
           >
             <Search className="w-4 h-4 text-[#5DE2E7] group-hover:scale-110 transition-transform" />
-            <span className="text-xs text-slate-400 hidden sm:inline-block pr-1 font-medium">Search...</span>
+            <span className="text-xs text-slate-400 hidden md:inline-block pr-1 font-medium">Search...</span>
           </Link>
 
           {/* Telegram Channel Button */}
@@ -160,14 +138,57 @@ export const Header: React.FC = () => {
             href={siteSettings.telegramChannel}
             target="_blank"
             rel="noopener noreferrer"
-            className="px-3.5 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-[0_0_18px_rgba(93,226,231,0.4)] transition-all hover:scale-105"
+            className="px-3 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-[0_0_18px_rgba(93,226,231,0.3)] transition-all hover:scale-105"
           >
             <BrandIcon name="telegram" className="w-3.5 h-3.5 text-white" />
             <span className="hidden sm:inline-block">Telegram</span>
           </a>
+
+          {/* My Account Button (Identified from User Prompt/Image) */}
+          <button
+            onClick={handleAccountClick}
+            className={`px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all shadow-md ${
+              isAuthenticated && currentUser
+                ? 'bg-[#133E87]/80 hover:bg-[#133E87] text-white border border-[#5DE2E7]/40 shadow-[0_0_15px_rgba(93,226,231,0.3)]'
+                : 'bg-gradient-to-r from-[#133E87] to-cyan-700 hover:from-cyan-600 hover:to-blue-600 text-white border border-[#5DE2E7]/40 shadow-[0_0_15px_rgba(93,226,231,0.2)]'
+            }`}
+            title={isAuthenticated ? 'Open Account Center' : 'Sign In or Register'}
+          >
+            {isAuthenticated && currentUser ? (
+              <>
+                {currentUser.photoURL ? (
+                  <img
+                    src={currentUser.photoURL}
+                    alt={currentUser.firstName}
+                    className="w-5 h-5 rounded-full object-cover border border-[#5DE2E7]"
+                  />
+                ) : (
+                  <div className="w-5 h-5 rounded-full bg-cyan-400 text-slate-950 flex items-center justify-center text-[10px] font-black">
+                    {currentUser.firstName?.[0]?.toUpperCase() || 'U'}
+                  </div>
+                )}
+                <span className="hidden sm:inline-block max-w-[90px] truncate">
+                  {currentUser.firstName || 'Account'}
+                </span>
+                {currentUser.role === 'admin' && (
+                  <span className="text-[9px] uppercase px-1 py-0.2 rounded bg-purple-500/30 text-purple-300 border border-purple-400/40 hidden md:inline-block">
+                    Admin
+                  </span>
+                )}
+              </>
+            ) : (
+              <>
+                <div className="p-0.5 rounded-full bg-[#5DE2E7]/20 text-[#5DE2E7]">
+                  <User className="w-3.5 h-3.5" />
+                </div>
+                <span>My Account</span>
+              </>
+            )}
+          </button>
         </div>
 
       </div>
     </header>
   );
 };
+

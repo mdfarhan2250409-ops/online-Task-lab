@@ -1,33 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
-import { Smartphone, Layout, Bot, Sliders, Monitor, ArrowRight, Layers } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { ResourceCategory } from '../types';
+import { CategoryIcon } from './CategoryIcon';
 
 export const CategoryGrid: React.FC = () => {
   const { categories, resources, setSelectedCategory } = useApp();
-
-  const getIcon = (iconName: string) => {
-    switch (iconName.toLowerCase()) {
-      case 'smartphone':
-      case 'apps':
-        return <Smartphone className="w-6 h-6 text-[#5DE2E7]" />;
-      case 'layout':
-      case 'landing-pages':
-        return <Layout className="w-6 h-6 text-[#5DE2E7]" />;
-      case 'bot':
-      case 'ai-prompts':
-        return <Bot className="w-6 h-6 text-[#5DE2E7]" />;
-      case 'sliders':
-      case 'lr-presets':
-        return <Sliders className="w-6 h-6 text-[#5DE2E7]" />;
-      case 'monitor':
-      case 'pc-software':
-        return <Monitor className="w-6 h-6 text-[#5DE2E7]" />;
-      default:
-        return <Layers className="w-6 h-6 text-[#5DE2E7]" />;
-    }
-  };
 
   const getItemCount = (catId: ResourceCategory) => {
     return resources.filter(r => r.category === catId).length;
@@ -54,7 +33,7 @@ export const CategoryGrid: React.FC = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         {categories.map((cat) => {
           const count = getItemCount(cat.id as ResourceCategory);
           return (
@@ -65,11 +44,16 @@ export const CategoryGrid: React.FC = () => {
               className="group glass-panel rounded-2xl p-5 border border-white/10 glass-panel-hover cursor-pointer relative overflow-hidden flex flex-col justify-between block"
             >
               {/* Background gradient image effect */}
-              <div className="absolute inset-0 opacity-10 group-hover:opacity-20 transition-opacity bg-cover bg-center" style={{ backgroundImage: `url(${cat.banner})` }} />
+              {cat.banner && (
+                <div
+                  className="absolute inset-0 opacity-10 group-hover:opacity-20 transition-opacity bg-cover bg-center"
+                  style={{ backgroundImage: `url(${cat.banner})` }}
+                />
+              )}
 
               <div className="relative z-10">
                 <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#133E87] to-[#0B1D51] border border-[#5DE2E7]/30 flex items-center justify-center mb-4 shadow-[0_0_15px_rgba(93,226,231,0.25)] group-hover:scale-110 transition-transform">
-                  {getIcon(cat.icon || cat.id)}
+                  <CategoryIcon name={cat.icon || cat.id} className="w-6 h-6 text-[#5DE2E7]" />
                 </div>
 
                 <h3 className="text-lg font-bold text-white group-hover:text-[#5DE2E7] transition-colors mb-1">
@@ -96,4 +80,3 @@ export const CategoryGrid: React.FC = () => {
     </section>
   );
 };
-

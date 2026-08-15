@@ -142,19 +142,24 @@ interface AppContextType {
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
-const LOCAL_STORAGE_KEY = 'OTL_APP_DATA_V1';
+const LOCAL_STORAGE_KEY = 'OTL_APP_DATA_V2';
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   // Load initial state from LocalStorage or Defaults
   const [resources, setResources] = useState<Resource[]>(() => {
     try {
+      // Also purge old V1 cache if present
+      localStorage.removeItem('OTL_APP_DATA_V1_resources');
+      localStorage.removeItem('OTL_APP_DATA_V1_categories');
+
       const saved = localStorage.getItem(`${LOCAL_STORAGE_KEY}_resources`);
       if (saved) {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed) && parsed.length > 0) {
-          const existingIds = new Set(parsed.map((r: any) => r.id));
+          const cleaned = parsed.filter((r: any) => r.category !== 'pc-software' && !String(r.id).startsWith('pc-'));
+          const existingIds = new Set(cleaned.map((r: any) => r.id));
           const missing = initialResources.filter(r => !existingIds.has(r.id));
-          return missing.length > 0 ? [...parsed, ...missing] : parsed;
+          return missing.length > 0 ? [...cleaned, ...missing] : cleaned;
         }
       }
       return initialResources;
@@ -166,7 +171,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [categories, setCategories] = useState<CategoryItem[]>(() => {
     try {
       const saved = localStorage.getItem(`${LOCAL_STORAGE_KEY}_categories`);
-      return saved ? JSON.parse(saved) : initialCategories;
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed.filter((c: any) => c.id !== 'pc-software' && c.slug !== 'pc-software');
+        }
+      }
+      return initialCategories;
     } catch (e) {
       return initialCategories;
     }
@@ -294,8 +305,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [selectedCategory, setSelectedCategoryState] = useState<ResourceCategory | 'all'>(() => {
     if (initialPath.startsWith('/category/')) {
       const cat = initialPath.replace('/category/', '') as ResourceCategory;
-      const validCategories = ['all', 'apps', 'landing-pages', 'ai-prompts', 'lr-presets', 'pc-software'];
-      if (validCategories.includes(cat)) return cat;
+      return cat || 'all';
     }
     return 'all';
   });
@@ -362,9 +372,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       setIsNotFound(false);
     } else if (path.startsWith('/category/')) {
       const catId = path.replace('/category/', '') as ResourceCategory;
-      const validCategories = ['all', 'apps', 'landing-pages', 'ai-prompts', 'lr-presets', 'pc-software'];
-      if (validCategories.includes(catId)) {
-        setSelectedCategoryState(catId);
+      const matchedCat = categories.find(c => c.id.toLowerCase() === catId.toLowerCase() || c.slug.toLowerCase() === catId.toLowerCase());
+      if (matchedCat || categories.length === 0) {
+        setSelectedCategoryState(matchedCat ? matchedCat.id : catId);
         setIsAdminOpenState(false);
         setIsContactModalOpenState(false);
         setIsSearchModalOpenState(false);
@@ -512,7 +522,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       const resList: Resource[] = [];
       if (!snapshot.empty) {
         snapshot.forEach(docSnap => {
-          resList.push({ id: docSnap.id, ...docSnap.data() } as Resource);
+          const data = docSnap.data();
+          if (docSnap.id.startsWith('pc-') || data.category === 'pc-software' || (data.tags && Array.isArray(data.tags) && data.tags.includes('PC Software'))) {
+            // Delete old pc-software item from Firestore
+            deleteDoc(doc(db, 'resources', docSnap.id)).catch(() => {});
+          } else {
+            resList.push({ id: docSnap.id, ...data } as Resource);
+          }
         });
       }
 
@@ -541,7 +557,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         if (data.homepageBuilder) setHomepageBuilder(data.homepageBuilder);
         if (data.contactSettings) setContactSettings(data.contactSettings);
         if (data.floatingButtonsSettings) setFloatingButtonsSettings(data.floatingButtonsSettings);
-        if (data.categories) setCategories(data.categories);
+        if (data.categories && Array.isArray(data.categories)) {
+          const cleanedCats = data.categories.filter((c: any) => c.id !== 'pc-software' && c.slug !== 'pc-software');
+          setCategories(cleanedCats);
+          if (cleanedCats.length !== data.categories.length) {
+            setDoc(doc(db, 'settings', 'global'), { categories: cleanedCats }, { merge: true }).catch(() => {});
+          }
+        }
         if (data.ads) setAds(data.ads);
         if (data.seo) setSeo(data.seo);
         if (data.analytics) setAnalytics(data.analytics);

@@ -50,15 +50,6 @@ export const initialCategories: CategoryItem[] = [
     description: 'Cinematic, Moody, Cyberpunk & Aesthetic DNG/XMP presets for Mobile & Desktop.',
     itemCount: 12,
   },
-  {
-    id: 'pc-software',
-    name: 'PC Software',
-    slug: 'pc-software',
-    icon: 'Monitor',
-    banner: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=1200&q=80',
-    description: 'Pre-activated PC Software, video editors & productivity desktop tools.',
-    itemCount: 11,
-  },
 ];
 
 export const initialResources: Resource[] = [
@@ -245,6 +236,7 @@ export const initialResources: Resource[] = [
     downloadsCount: 4120,
     telegramClicksCount: 4500,
     createdAt: '2026-08-02',
+    demoUrl: 'https://example.com/demo/cyber-neon-preset',
     beforeImage: 'https://images.unsplash.com/photo-1519501025264-65ba15a82390?auto=format&fit=crop&w=800&q=80&sat=-50&con=10',
     afterImage: 'https://images.unsplash.com/photo-1519501025264-65ba15a82390?auto=format&fit=crop&w=800&q=80',
     presetFormat: '.DNG'
@@ -261,6 +253,7 @@ export const initialResources: Resource[] = [
     fileSize: '12.1 MB',
     downloadUrl: 'https://t.me/OnlineTaskLab/405',
     telegramUrl: 'https://t.me/OnlineTaskLab/405',
+    demoUrl: 'https://example.com/demo/moody-blue-preset',
     tags: ['Moody Blue', 'Cinematic', 'Travel Preset', 'DNG Mobile'],
     isFeatured: false,
     isTrending: true,
@@ -271,71 +264,11 @@ export const initialResources: Resource[] = [
     afterImage: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=800&q=80',
     presetFormat: '.XMP'
   },
-
-  // PC SOFTWARE
-  {
-    id: 'pc-photoshop-2024',
-    title: 'Adobe Photoshop 2024 v25.9 (Pre-Activated Lifetime)',
-    slug: 'adobe-photoshop-2024-pre-activated',
-    category: 'pc-software',
-    shortDescription: 'Generative Fill AI, Neural Filters, Remove Tool & 1-click install pre-cracked.',
-    fullDescription: 'Full pre-activated version of Adobe Photoshop 2024 for Windows 10/11 64-bit. Includes Generative Fill powered by Adobe Firefly AI, enhanced brush controls, automatic background selector, and full multi-language support.',
-    thumbnail: 'https://images.unsplash.com/photo-1558655146-d09347e92766?auto=format&fit=crop&w=600&q=80',
-    version: 'v25.9.1',
-    fileSize: '3.4 GB',
-    downloadUrl: 'https://t.me/OnlineTaskLab/501',
-    telegramUrl: 'https://t.me/OnlineTaskLab/501',
-    tags: ['Photoshop', 'Adobe', 'PC Software', 'Pre-Activated', 'Generative Fill'],
-    isFeatured: true,
-    isTrending: true,
-    downloadsCount: 6890,
-    telegramClicksCount: 7200,
-    createdAt: '2026-08-01',
-    softwareVersion: 'v25.9.1 2024 Build',
-    systemRequirements: {
-      os: 'Windows 10 / 11 (64-bit v21H2+)',
-      processor: 'Intel or AMD multicore processor (2 GHz or faster)',
-      ram: '8 GB minimum (16 GB recommended)',
-      gpu: 'DirectX 12 support with 2 GB GPU memory',
-      storage: '20 GB free SSD space'
-    },
-    changelog: [
-      'Added Firefly Generative Expand feature',
-      'Improved Neural Filters speed by 40%',
-      'Fixed minor GPU acceleration memory leaks'
-    ]
-  },
-  {
-    id: 'pc-idm-silent-install',
-    title: 'Internet Download Manager (IDM) v6.42 Silent Install',
-    slug: 'internet-download-manager-idm-silent-install',
-    category: 'pc-software',
-    shortDescription: '5x faster download acceleration, automatic browser integration & lifetime key.',
-    fullDescription: 'The world standard download manager for PC. Accelerates downloads by up to 500%, resumes interrupted downloads, grabs embedded videos from Web pages automatically, and runs silently without popup nagging.',
-    thumbnail: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=600&q=80',
-    version: 'v6.42 Build 18',
-    fileSize: '12 MB',
-    downloadUrl: 'https://t.me/OnlineTaskLab/503',
-    telegramUrl: 'https://t.me/OnlineTaskLab/503',
-    tags: ['IDM', 'Download Manager', 'Silent Install', 'PC Utility'],
-    isFeatured: false,
-    isTrending: true,
-    downloadsCount: 8400,
-    telegramClicksCount: 9100,
-    createdAt: '2026-08-03',
-    softwareVersion: 'v6.42 Build 18',
-    systemRequirements: {
-      os: 'Windows XP / 7 / 8 / 10 / 11',
-      processor: '1 GHz CPU',
-      ram: '512 MB RAM',
-      storage: '50 MB free space'
-    }
-  }
 ];
 
 export const initialSiteSettings: SiteSettings = {
   websiteTitle: 'Online Task Lab (OTL)',
-  tagline: 'Apps • AI Prompts • Landing Pages • Lightroom Presets • PC Software',
+  tagline: 'Apps • AI Prompts • Landing Pages • Lightroom Presets',
   logoText: 'OTL',
   footerText: '© 2026 Online Task Lab (OTL). Premium Digital Resource Hub. All rights reserved.',
   primaryColor: '#0B1D51',
@@ -359,7 +292,7 @@ export const initialHomepageBuilder: HomepageBuilderSettings = {
   heroLogoText: 'OTL',
   heroLogoUrl: '',
   heroTitle: 'The Ultimate Digital Resource Hub',
-  heroSubtitle: 'Explore & download premium Mobile Apps, AI Prompts, Landing Pages, Lightroom Presets, and PC Software through Telegram.',
+  heroSubtitle: 'Explore & download premium Mobile Apps, AI Prompts, Landing Pages, and Lightroom Presets through Telegram.',
   heroExploreBtnText: 'Explore Resources',
   heroTelegramBtnText: 'Join Telegram Channel',
   heroTelegramBtnUrl: 'https://t.me/OnlineTaskLab',
@@ -407,7 +340,6 @@ export const initialMobileNavSettings: MobileNavSettings = {
     { id: 'm-landing', label: 'Landing Pages', icon: 'Layout', link: '#landing-pages', categoryFilter: 'landing-pages' },
     { id: 'm-prompts', label: 'AI Prompts', icon: 'Bot', link: '#ai-prompts', categoryFilter: 'ai-prompts', badge: 'New' },
     { id: 'm-presets', label: 'LR Presets', icon: 'Sliders', link: '#lr-presets', categoryFilter: 'lr-presets' },
-    { id: 'm-software', label: 'PC Software', icon: 'Monitor', link: '#pc-software', categoryFilter: 'pc-software' },
     { id: 'm-contact', label: 'Contact', icon: 'Mail', link: '#contact' },
     { id: 'm-telegram', label: 'Telegram', icon: 'Send', link: 'https://t.me/OnlineTaskLab', badge: 'Join' }
   ]
@@ -434,15 +366,15 @@ export const initialAds: Advertisement[] = [
 
 export const initialSEO: SEOConfig = {
   metaTitle: 'Online Task Lab (OTL) | Premium Digital Resources Hub',
-  metaDescription: 'Download latest Mobile Apps MOD, AI Prompts, Landing Page Templates, Lightroom Presets, and PC Software free via Telegram.',
-  keywords: 'OTL, Online Task Lab, Mod APK, AI Prompts, Midjourney Prompt, Lightroom Preset DNG, PC Software Crack, Telegram Channel'
+  metaDescription: 'Download latest Mobile Apps MOD, AI Prompts, Landing Page Templates, and Lightroom Presets free via Telegram.',
+  keywords: 'OTL, Online Task Lab, Mod APK, AI Prompts, Midjourney Prompt, Lightroom Preset DNG, Telegram Channel'
 };
 
 export const initialAnalytics: AnalyticsData = {
   totalVisitors: 28450,
   totalDownloads: 43200,
   telegramClicks: 49800,
-  popularProductIds: ['pc-photoshop-2024', 'prompt-mj-v6-cyberpunk', 'app-capcut-pro']
+  popularProductIds: ['prompt-mj-v6-cyberpunk', 'app-capcut-pro', 'preset-cyber-neon-night']
 };
 
 export const initialInquiries: Inquiry[] = [
@@ -451,7 +383,7 @@ export const initialInquiries: Inquiry[] = [
     email: 'user.demo@gmail.com',
     subject: 'Request for Adobe Illustrator MOD APK',
     telegramWhatsapp: '@user_demo_tg / +8801700000000',
-    message: 'Hello Admin, can you please upload Adobe Illustrator Mobile or PC version? Thank you!',
+    message: 'Hello Admin, can you please upload Adobe Illustrator Mobile version? Thank you!',
     createdAt: new Date().toISOString().split('T')[0],
     status: 'unread'
   },
@@ -521,12 +453,12 @@ export const initialContactSettings: ContactPageSettings = {
     },
     {
       id: 'faq-2',
-      question: 'Are all Mobile Apps & PC Software safe to install?',
+      question: 'Are all Mobile Apps & Presets safe to install?',
       answer: 'Yes! Every file uploaded to OTL is thoroughly scanned with VirusTotal and tested on clean sandbox environments before publication.'
     },
     {
       id: 'faq-3',
-      question: 'Can I request a custom MOD APK, AI Prompt, or PC Software?',
+      question: 'Can I request a custom MOD APK, AI Prompt, or Preset?',
       answer: 'Absolutely! Send us a message using the form below or contact our Support team directly on Telegram.'
     }
   ]

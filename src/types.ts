@@ -1,4 +1,4 @@
-export type ResourceCategory = 'apps' | 'landing-pages' | 'ai-prompts' | 'lr-presets' | 'pc-software';
+export type ResourceCategory = string;
 
 export interface Resource {
   id: string;
@@ -25,6 +25,7 @@ export interface Resource {
   apkVersion?: string;
   requirements?: string;
   packageName?: string;
+  modInfo?: string;
   screenshots?: string[];
 
   // Landing Pages specific
@@ -41,17 +42,6 @@ export interface Resource {
   beforeImage?: string;
   afterImage?: string;
   presetFormat?: '.DNG' | '.XMP' | '.ZIP';
-
-  // PC Software specific
-  softwareVersion?: string;
-  systemRequirements?: {
-    os: string;
-    processor: string;
-    ram: string;
-    gpu?: string;
-    storage: string;
-  };
-  changelog?: string[];
 }
 
 export interface CategoryItem {
@@ -222,3 +212,145 @@ export interface FloatingButtonsSettings {
   stackDirection: 'bottom-to-top' | 'top-to-bottom';
   buttons: FloatingButton[];
 }
+
+// User and Authentication Types
+export type UserStatus = 'active' | 'suspended' | 'banned' | 'disabled';
+export type UserRole = 'user' | 'admin';
+export type AuthProviderType = 'email' | 'google';
+
+export interface UserProfile {
+  id: string; // Document ID (usually same as userId / auth uid)
+  userId: string; // Auth UID
+  firstName: string;
+  lastName: string;
+  username: string;
+  email: string;
+  photoURL?: string;
+  provider: AuthProviderType;
+  role: UserRole;
+  status: UserStatus;
+  emailVerified: boolean;
+  createdAt: string;
+  lastLoginAt: string;
+  lastActiveAt: string;
+  lastLogoutAt?: string;
+  downloadedResourceIds?: string[];
+  downloadCount?: number;
+  notes?: string;
+}
+
+export interface UserActivity {
+  id: string;
+  userId: string;
+  userEmail: string;
+  username?: string;
+  action:
+    | 'Account Created'
+    | 'Email Verified'
+    | 'Login'
+    | 'Logout'
+    | 'Password Reset Requested'
+    | 'Password Changed'
+    | 'Google Login'
+    | 'Last Active'
+    | 'Download';
+  timestamp: string;
+  details?: string;
+  ipAddress?: string;
+}
+
+export interface AdminActivityLog {
+  id: string;
+  adminEmail: string;
+  action:
+    | 'User Banned'
+    | 'User Unbanned'
+    | 'User Suspended'
+    | 'User Deleted'
+    | 'Template Updated'
+    | 'Email Settings Updated'
+    | 'Template Activated'
+    | 'User Status Changed'
+    | 'Settings Updated';
+  targetId?: string;
+  targetEmail?: string;
+  timestamp: string;
+  details?: string;
+}
+
+// Custom Branded Email System Types
+export type EmailTemplateType =
+  | 'email-verification'
+  | 'password-reset-otp'
+  | 'welcome-email'
+  | 'password-changed'
+  | 'account-suspended'
+  | 'account-reactivated'
+  | 'custom-system';
+
+export interface EmailTemplate {
+  id: string;
+  type: EmailTemplateType;
+  name: string;
+  subject: string;
+  heading: string;
+  description: string;
+  otpBoxText?: string;
+  buttonText?: string;
+  buttonUrl?: string;
+  footerText?: string;
+  supportEmail?: string;
+  websiteUrl?: string;
+  logoUrl?: string;
+  brandName?: string;
+  backgroundColor?: string;
+  containerColor?: string;
+  primaryColor?: string;
+  textColor?: string;
+  accentColor?: string;
+  borderRadius?: string;
+  fontSize?: string;
+  isActive: boolean;
+  version: number;
+  updatedAt: string;
+}
+
+export interface EmailLog {
+  id: string;
+  recipient: string;
+  emailType: string;
+  templateId?: string;
+  subject: string;
+  sentAt: string;
+  status: 'delivered' | 'sent' | 'pending' | 'failed';
+  provider: string;
+  otpPreview?: string;
+  details?: string;
+}
+
+export interface EmailSettings {
+  senderName: string;
+  senderEmail: string;
+  replyToEmail: string;
+  supportEmail: string;
+  logoUrl: string;
+  brandName: string;
+  brandColor: string;
+  secondaryColor: string;
+  websiteUrl: string;
+  defaultTemplateId?: string;
+  apiKeyConfigured?: boolean;
+}
+
+export interface OTPRecord {
+  id: string;
+  email: string;
+  otp: string;
+  type: 'verification' | 'password-reset';
+  expiresAt: number; // Unix timestamp ms
+  attempts: number;
+  verified: boolean;
+  createdAt: number;
+  tempPassword?: string;
+}
+

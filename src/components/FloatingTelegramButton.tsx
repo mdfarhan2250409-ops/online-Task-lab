@@ -5,9 +5,9 @@ import { FloatingButton } from '../types';
 import { BrandIcon } from './BrandIcons';
 
 export const FloatingTelegramButton: React.FC = () => {
-  const { floatingButtonsSettings, siteSettings, recordTelegramClick } = useApp();
+  const { floatingButtonsSettings, siteSettings, recordTelegramClick, isAdminOpen } = useApp();
 
-  if (!floatingButtonsSettings || !floatingButtonsSettings.enabled) {
+  if (isAdminOpen || !floatingButtonsSettings || !floatingButtonsSettings.enabled) {
     return null;
   }
 

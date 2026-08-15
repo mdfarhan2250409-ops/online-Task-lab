@@ -1,13 +1,16 @@
 import React from 'react';
 import { useApp } from '../../context/AppContext';
-import { Layers, Download, Send, Eye, ShieldCheck, Sparkles, RefreshCw } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
+import { Layers, Download, Send, Eye, ShieldCheck, Sparkles, RefreshCw, Users, UserCheck, Mail } from 'lucide-react';
 
 export const AdminDashboard: React.FC = () => {
   const { resources, analytics, categories, resetToDefaults, triggerSplashLoaderPreview } = useApp();
+  const { allUsers, userActivities } = useAuth();
 
   const totalProducts = resources.length;
   const featuredProducts = resources.filter(r => r.isFeatured).length;
   const trendingProducts = resources.filter(r => r.isTrending).length;
+  const activeUsersCount = allUsers.filter(u => u.status === 'active').length;
 
   return (
     <div className="space-y-6">
@@ -34,7 +37,16 @@ export const AdminDashboard: React.FC = () => {
       </div>
 
       {/* Metrics Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
+        <div className="p-4 rounded-2xl bg-slate-950/80 border border-white/10">
+          <div className="flex items-center justify-between text-slate-400 text-xs mb-2">
+            <span>Total Users</span>
+            <Users className="w-4 h-4 text-[#5DE2E7]" />
+          </div>
+          <div className="text-2xl font-black text-white">{allUsers.length}</div>
+          <div className="text-[10px] text-emerald-400 mt-1">{activeUsersCount} Active</div>
+        </div>
+
         <div className="p-4 rounded-2xl bg-slate-950/80 border border-white/10">
           <div className="flex items-center justify-between text-slate-400 text-xs mb-2">
             <span>Total Products</span>
@@ -69,6 +81,17 @@ export const AdminDashboard: React.FC = () => {
           </div>
           <div className="text-2xl font-black text-white">{featuredProducts} / {trendingProducts}</div>
           <div className="text-[10px] text-amber-300 mt-1">Highlighted on Hero/Feed</div>
+        </div>
+
+        <div className="p-4 rounded-2xl bg-slate-950/80 border border-white/10">
+          <div className="flex items-center justify-between text-slate-400 text-xs mb-2">
+            <span>Auth Providers</span>
+            <UserCheck className="w-4 h-4 text-purple-400" />
+          </div>
+          <div className="text-sm font-black text-white mt-1">
+            Email & Google
+          </div>
+          <div className="text-[10px] text-slate-400 mt-1">With OTP Verification</div>
         </div>
       </div>
 
